@@ -18,6 +18,6 @@ class Controller extends AbstractController {
     #[Route('/app/formu', name: 'formu', methods: ['GET'])]
         public function formuEntradaCoche(): Response 
         {
-            return $this->render('formularioCoche.html.twig');
+            return $this->render('base.html.twig');
         }
 }
