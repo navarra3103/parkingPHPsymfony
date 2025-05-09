@@ -12,11 +12,11 @@ use Doctrine\ORM\EntityManagerInterface;
 
 final class CarController extends AbstractController
 {
-    #[Route('/app/addCoche', name: 'app_coche_nuevo')]
+    #[Route('/app/addCoche', name: 'app_coche_nuevo', methods:"POST")]
     public function nuevo(Request $request, EntityManagerInterface $entityManager): Response
     {
         $coche = new Coche();
-        $form = $this->createForm(CocheType::class, $coche);
+        $form = $this->createForm(Coche::class, $coche);
 
         $form->handleRequest($request);
 
