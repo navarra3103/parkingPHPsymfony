@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Coche;
-
+use App\Form\CocheType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -12,32 +12,27 @@ use Doctrine\ORM\EntityManagerInterface;
 
 final class CarController extends AbstractController
 {
-    #[Route('/app/addCoche', name: 'app_coche_nuevo', methods:"POST")]
-    public function nuevo(Request $request, EntityManagerInterface $entityManager): Response
+    #[Route('/app/addCocheManual', name: 'app_coche_nuevo_manual', methods: ['GET', 'POST'])]
+    public function nuevoManual(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $coche = new Coche();
-        $form = $this->createForm(Coche::class, $coche);
+        if ($request->isMethod('POST')) {
+            $marca = $request->request->get('marca');
 
-        $form->handleRequest($request);
+            if ($marca && $modelo && $color) {
+                $coche = new Coche();
+                $coche->setMarca($marca);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            // Obtener los datos del formulario individualmente
-            $matricula = $form->get('Matricula')->getData();
+                $entityManager->persist($coche);
+                $entityManager->flush();
 
-            // Asignar los datos a la entidad Coche
-            $coche->setMatricula($matricula);
+                $this->addFlash('success', '¡Coche guardado con éxito!');
 
-            // Persistir y guardar la entidad
-            $entityManager->persist($coche);
-            $entityManager->flush();
-
-            $this->addFlash('success', '¡Coche guardado con éxito!');
-
-            return $this->redirectToRoute('app_coche_index'); // Reemplaza con la ruta de tu listado de coches
+                return $this->redirectToRoute('app_coche_index'); // Asegúrate de que esta ruta exista
+            } else {
+                $this->addFlash('error', 'Por favor, completa todos los campos.');
+            }
         }
 
-        return $this->render('index.html.twig', [
-            'form' => $form->createView(),
-        ]);
+        return $this->render('coche/nuevo_manual.html.twig'); // Asegúrate de crear esta plantilla
     }
 }

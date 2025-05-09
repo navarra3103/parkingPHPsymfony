@@ -1,4 +1,3 @@
-
 {% block title %}Registro de Coche{% endblock %}
 
 {% block stylesheets %}
@@ -6,40 +5,30 @@
 {% endblock %}
 
 {% block body %}
-<div class="container mt-5">
-    <h2 class="mb-4 text-center">Registro de Vehículo</h2>
-    <form method="post" action={{ path('app_coche_nuevo') }}> 
-        <div class="mb-3">
-            <label for="matricula" class="form-label">Matrícula</label>
-            <input type="text" class="form-control" id="matricula" name="matricula" required>
-        </div>
-
-        <div class="mb-3">
-            <label for="modelo" class="form-label">Modelo</label>
-            <input type="text" class="form-control" id="modelo" name="modelo" required>
-        </div>
-
-        <div class="mb-3">
-            <label for="nombre" class="form-label">Nombre completo</label>
-            <input type="text" class="form-control" id="nombre" name="nombre" required>
-        </div>
-
-        <div class="mb-3">
-            <label for="telefono" class="form-label">Teléfono</label>
-            <input type="tel" class="form-control" id="telefono" name="telefono" required>
-        </div>
-
-        <div class="mb-3">
-            <label for="dni" class="form-label">DNI</label>
-            <input type="text" class="form-control" id="dni" name="dni" required>
-        </div>
-
-        <div class="mb-3">
-            <label for="email" class="form-label">Correo electrónico</label>
-            <input type="email" class="form-control" id="email" name="email" required>
-        </div>
-
-        <button type="submit" class="btn btn-primary w-100 mt-3">Guardar</button>
-    </form>
-</div>
+    <div class="container mt-5">
+        <h1 class="mb-4">Registro de Coche</h1>
+        
+        {#  Comprueba si la variable 'form' está definida #}
+        {% if form is defined %}
+            {#  Inicia el formulario #}
+            {{ form_start(form) }}
+        
+            {#  Muestra los campos del formulario #}
+                <div class="form-group">
+                    {{ form_label(form.Matricula, 'Matrícula del Coche', {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.Matricula, {'attr': {'class': 'form-control'}}) }}
+                    <div class="text-danger">
+                        {{ form_errors(form.Matricula) }}
+                    </div>
+                </div>
+            
+            {#  Muestra el botón de envío #}
+            <button type="submit" class="btn btn-primary mt-3">Guardar Coche</button>
+            
+            {#  Finaliza el formulario #}
+            {{ form_end(form) }}
+        {% else %}
+             <p>El formulario no está definido. Asegúrate de que se pasa desde el controlador.</p>
+        {% endif %}
+    </div>
 {% endblock %}
