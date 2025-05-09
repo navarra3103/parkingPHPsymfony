@@ -11,7 +11,7 @@ class Plaza
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    private ?int $idPlaza = null;
+    private ?int $IdPlaza = null;
 
     #[ORM\ManyToOne(targetEntity: Tipo::class)]
     #[ORM\JoinColumn(name: 'IdTipo', referencedColumnName: 'IdTipo', nullable: false)]
@@ -19,7 +19,7 @@ class Plaza
 
     public function getIdPlaza(): ?int
     {
-        return $this->idPlaza;
+        return $this->IdPlaza;
     }
 
     public function getIdTipo(): ?Tipo

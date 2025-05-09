@@ -1,35 +1,84 @@
 <?php
 
 namespace App\Entity;
+use Doctrine\DBAL\Types\Types;
 
 use App\Repository\VisitaRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: VisitaRepository::class)]
-class Visita
+#[ORM\Entity]
+class Vista
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    private ?int $idPlaza = null;
+    private ?int $IdVisita = null;
 
-    #[ORM\ManyToOne(targetEntity: Tipo::class)]
-    #[ORM\JoinColumn(name: 'IdTipo', referencedColumnName: 'IdTipo', nullable: false)]
-    private ?Tipo $IdTipo = null;
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private ?\DateTimeInterface $fecha = null;
 
-    public function getIdPlaza(): ?int
+    #[ORM\ManyToOne(targetEntity: Estado::class)]
+    #[ORM\JoinColumn(name: 'Estado_IdEstado', referencedColumnName: 'IdEstado', nullable: false)]
+    private ?Estado $Estado = null;
+
+    #[ORM\ManyToOne(targetEntity: Coche::class)]
+    #[ORM\JoinColumn(name: 'Matricula', referencedColumnName: 'Matricula', nullable: false)]
+    private ?Coche $Matricula = null;
+
+    #[ORM\ManyToOne(targetEntity: Plaza::class)]
+    #[ORM\JoinColumn(name: 'Plaza_IdPlaza', referencedColumnName: 'IdPlaza', nullable: false)]
+    private ?Plaza $Plaza = null;
+
+    public function getIdVisita(): ?int
     {
-        return $this->idPlaza;
+        return $this->IdVisita;
     }
 
-    public function getIdTipo(): ?Tipo
+    public function getFecha(): ?\DateTimeInterface
     {
-        return $this->IdTipo;
+        return $this->fecha;
     }
 
-    public function setIdTipo(?Tipo $IdTipo): self
+    public function setFecha(?\DateTimeInterface $fecha): self
     {
-        $this->IdTipo = $IdTipo;
+        $this->fecha = $fecha;
+
+        return $this;
+    }
+
+    public function getEstado(): ?Estado
+    {
+        return $this->Estado;
+    }
+
+    public function setEstado(?Estado $Estado): self
+    {
+        $this->Estado = $Estado;
+
+        return $this;
+    }
+
+    public function getMatricula(): ?Coche
+    {
+        return $this->Matricula;
+    }
+
+    public function setMatricula(?Coche $Matricula): self
+    {
+        $this->Matricula = $Matricula;
+
+        return $this;
+    }
+
+    public function getPlaza(): ?Plaza
+    {
+        return $this->Plaza;
+    }
+
+    public function setPlaza(?Plaza $Plaza): self
+    {
+        $this->Plaza = $Plaza;
+
         return $this;
     }
 }
