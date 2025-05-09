@@ -24,6 +24,6 @@ class Controller extends AbstractController {
     #[Route('/app/buscarCoches', name: 'buscaCoches', methods: ['GET'])]
         public function buscarCoches(): Response 
         {
-            return $this->render('buscarCoches.html.twig');
+            return $this->render('buscarCoche.html.twig');
         }
 }
