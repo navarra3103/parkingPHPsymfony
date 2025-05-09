@@ -6,33 +6,58 @@ use App\Entity\Coche;
 use App\Form\CocheType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
 use Doctrine\ORM\EntityManagerInterface;
 
 final class CarController extends AbstractController
 {
-    #[Route('/app/addCocheManual', name: 'app_coche_nuevo_manual', methods: ['GET', 'POST'])]
-    public function nuevoManual(Request $request, EntityManagerInterface $entityManager): Response
+    #[Route('/app', name: 'app', methods: ['GET'])]
+    public function home(): Response
     {
-        if ($request->isMethod('POST')) {
-            $marca = $request->request->get('marca');
+        return $this->render('index.html.twig');
+    }
 
-            if ($marca && $modelo && $color) {
-                $coche = new Coche();
-                $coche->setMarca($marca);
+    #[Route('/app/formu', name: 'formu', methods: ['GET', 'POST'])]
+    public function nuevo(Request $request, EntityManagerInterface $entityManager): Response
+    {
+        $coche = new Coche();
+        $form = $this->createForm(CocheType::class, $coche);
+        $form->handleRequest($request);
 
-                $entityManager->persist($coche);
-                $entityManager->flush();
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->persist($coche);
+            $entityManager->flush();
 
-                $this->addFlash('success', '¡Coche guardado con éxito!');
-
-                return $this->redirectToRoute('app_coche_index'); // Asegúrate de que esta ruta exista
-            } else {
-                $this->addFlash('error', 'Por favor, completa todos los campos.');
-            }
+            $this->addFlash('success', '¡Coche guardado con éxito!');
+            return $this->redirectToRoute('app');
         }
 
-        return $this->render('coche/nuevo_manual.html.twig'); // Asegúrate de crear esta plantilla
+        return $this->render('base.html.twig', [
+            'form' => $form->createView(),
+        ]);
+    }
+
+    #[Route('/app/buscarCoches', name: 'buscaCoches', methods: ['GET', 'POST'])]
+    public function buscar(Request $request): Response
+    {
+        $coche = new Coche();
+        $form = $this->createForm(CocheType::class, $coche);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $matricula = $form->get('Matricula')->getData();
+
+            // Aquí deberías buscar el coche por matrícula
+            // Ejemplo (requiere el repositorio de Coche):
+            // $resultados = $entityManager->getRepository(Coche::class)->findBy(['Matricula' => $matricula]);
+
+            $this->addFlash('info', "Buscando coche con matrícula: $matricula");
+        }
+
+        return $this->render('buscarCoche.html.twig', [
+            'form' => $form->createView(),
+        ]);
     }
 }

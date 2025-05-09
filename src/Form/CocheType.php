@@ -8,7 +8,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\TextType; // Ejemplo de un tipo de campo
 
-class CocheTypeForm extends AbstractType
+class CocheType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
