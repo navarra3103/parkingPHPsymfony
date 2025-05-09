@@ -32,18 +32,18 @@
     <div class="contenedor">
         <h3 style="color: green;">Introduce matrícula para buscar</h3>
 
-        {{ form_start(formulario) }}
+        {{ form_start(form) }}
             <div style="margin-bottom: 15px;">
-                {{ form_widget(formulario.matricula, { 'attr': {'placeholder': 'Ej: 1234ABC'} }) }}
+                {{ form_widget(form.Matricula, { 'attr': {'placeholder': 'Ej: 1234ABC'} }) }}
             </div>
             <div style="text-align: right;">
                 <button type="submit" class="btn">Buscar</button>
             </div>
-        {{ form_end(formulario) }}
+        {{ form_end(form) }}
 
         {% if coche is defined and coche %}
             <div style="margin-top: 30px; padding: 10px; border: 1px solid green;">
-                <p><strong>Matrícula:</strong> {{ coche.matricula }}</p>
+                <p><strong>Matrícula:</strong> {{ coche.Matricula }}</p>
                 <p><strong>Modelo:</strong> {{ coche.nombre }}</p>
 
                 <form method="post" action="{{ path('sacar_coche', { id: coche.id }) }}">
@@ -51,7 +51,7 @@
                     <button class="btn btn-danger" style="margin-top: 10px;">Sacar coche</button>
                 </form>
             </div>
-        {% elseif formulario is defined and formulario.vars.submitted %}
+        {% elseif form.vars.submitted %}
             <p style="color: red; margin-top: 20px;">No se encontró ningún coche con esa matrícula.</p>
         {% endif %}
     </div>
