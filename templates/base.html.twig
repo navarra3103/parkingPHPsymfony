@@ -1,17 +1,72 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
-        {% block stylesheets %}
-        {% endblock %}
+{% extends 'base.html.twig' %}
 
-        {% block javascripts %}
-            {% block importmap %}{{ importmap('app') }}{% endblock %}
-        {% endblock %}
-    </head>
-    <body>
-        {% block body %}{% endblock %}
-    </body>
-</html>
+{% block title %}Registro de Coche{% endblock %}
+
+{% block stylesheets %}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <h2 class="mb-4">Registrar Coche</h2>
+    <form>
+        <div class="mb-3">
+            <label for="matricula" class="form-label">Matrícula</label>
+            <input type="text" class="form-control" id="matricula" name="matricula" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="estado" class="form-label">Estado</label>
+            <select class="form-select" id="estado" name="estado" required onchange="mostrarCampos()">
+                <option value="">Seleccione una opción</option>
+                <option value="arreglar">Pendiente de arreglar</option>
+                <option value="recoger">Pendiente de recoger</option>
+            </select>
+        </div>
+
+        <div id="campos-arreglar" class="d-none">
+            <div class="mb-3">
+                <label for="fechaEntrada" class="form-label">Fecha prevista de entrada</label>
+                <input type="date" class="form-control" id="fechaEntrada" name="fechaEntrada">
+            </div>
+            <div class="mb-3">
+                <label for="averia" class="form-label">Tipo de avería</label>
+                <input type="text" class="form-control" id="averia" name="averia">
+            </div>
+            <div class="mb-3">
+                <label for="observacionesArreglar" class="form-label">Observaciones</label>
+                <textarea class="form-control" id="observacionesArreglar" name="observacionesArreglar" rows="3"></textarea>
+            </div>
+        </div>
+
+        <div id="campos-recoger" class="d-none">
+            <div class="mb-3">
+                <label for="fechaRecogida" class="form-label">Fecha prevista de recogida</label>
+                <input type="date" class="form-control" id="fechaRecogida" name="fechaRecogida">
+            </div>
+            <div class="mb-3">
+                <label for="observacionesRecoger" class="form-label">Observaciones</label>
+                <textarea class="form-control" id="observacionesRecoger" name="observacionesRecoger" rows="3"></textarea>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary mt-3">Guardar</button>
+    </form>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+function mostrarCampos() {
+    const estado = document.getElementById('estado').value;
+    document.getElementById('campos-arreglar').classList.add('d-none');
+    document.getElementById('campos-recoger').classList.add('d-none');
+
+    if (estado === 'arreglar') {
+        document.getElementById('campos-arreglar').classList.remove('d-none');
+    } else if (estado === 'recoger') {
+        document.getElementById('campos-recoger').classList.remove('d-none');
+    }
+}
+</script>
+{% endblock %}
