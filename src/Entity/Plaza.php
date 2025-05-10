@@ -4,32 +4,33 @@ namespace App\Entity;
 
 use App\Repository\PlazaRepository;
 use Doctrine\ORM\Mapping as ORM;
+use App\Entity\Tipo;
 
 #[ORM\Entity(repositoryClass: PlazaRepository::class)]
 class Plaza
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
-    private ?int $IdPlaza = null;
+    #[ORM\Column(name: "IdPlaza", type: "integer")]
+    private ?int $idPlaza = null;
 
     #[ORM\ManyToOne(targetEntity: Tipo::class)]
-    #[ORM\JoinColumn(name: 'IdTipo', referencedColumnName: 'IdTipo', nullable: false)]
-    private ?Tipo $IdTipo = null;
+    #[ORM\JoinColumn(name: "IdTipo", referencedColumnName: "IdTipo", nullable: false)]
+    private ?Tipo $tipo = null;
 
     public function getIdPlaza(): ?int
     {
-        return $this->IdPlaza;
+        return $this->idPlaza;
     }
 
-    public function getIdTipo(): ?Tipo
+    public function getTipo(): ?Tipo
     {
-        return $this->IdTipo;
+        return $this->tipo;
     }
 
-    public function setIdTipo(?Tipo $IdTipo): self
+    public function setTipo(?Tipo $tipo): self
     {
-        $this->IdTipo = $IdTipo;
+        $this->tipo = $tipo;
         return $this;
     }
 }

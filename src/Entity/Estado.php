@@ -14,7 +14,7 @@ class Estado
     private ?int $IdEstado = null;
 
     #[ORM\Column(type: 'string', length: 255)]
-    private string $nombre;
+    private string $Nombre;
 
     public function getIdEstado(): ?int
     {
@@ -23,12 +23,12 @@ class Estado
 
     public function getNombre(): string
     {
-        return $this->nombre;
+        return $this->Nombre;
     }
 
-    public function setNombre(string $nombre): self
+    public function setNombre(string $Nombre): self
     {
-        $this->nombre = $nombre;
+        $this->Nombre = $Nombre;
 
         return $this;
     }

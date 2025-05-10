@@ -9,19 +9,19 @@ use Doctrine\ORM\Mapping as ORM;
 class Tipo
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue(strategy: 'AUTO')] 
-    #[ORM\Column(type: 'integer')]
-    private ?int $IdTipo = null;
+    #[ORM\GeneratedValue]
+    #[ORM\Column(name: "IdTipo", type: "integer")]
+    private ?int $idTipo = null;
 
-    #[ORM\Column(type: 'string', length: 255)] 
-    private string $nombre;
+    #[ORM\Column(name: "Nombre", type: "string", length: 255)]
+    private ?string $nombre = null;
 
     public function getIdTipo(): ?int
     {
-        return $this->IdTipo;
+        return $this->idTipo;
     }
 
-    public function getNombre(): string
+    public function getNombre(): ?string
     {
         return $this->nombre;
     }
