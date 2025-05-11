@@ -42,9 +42,20 @@
         </div>
         <div>
             <h2>Tipo de plazas</h2>
+            {{ form_start(formulario_tipo) }}
+                {{ form_row(formulario_tipo.idTipo) }}
+                {{ form_row(formulario_tipo.nombre) }}
+                {{ form_row(formulario_tipo.color) }}
+                <button class="btn btn-primary">Guardar Tipo</button>
+            {{ form_end(formulario_tipo) }}
         </div>
         <div>
-            <h2>Estado de la visita</h2>
+            <h2>Lista de estados</h2>
+            {{ form_start(formulario_estado) }}
+                {{ form_row(formulario_estado.idEstado) }}
+                {{ form_row(formulario_estado.nombre) }}
+                <button class="btn btn-primary">Guardar Estado</button>
+            {{ form_end(formulario_estado) }}
         </div>
     </div>
     <footer></footer>
