@@ -5,7 +5,9 @@ namespace App\Controller;
 use App\Entity\Visita;
 use App\Entity\Coche;
 use App\Entity\Plaza;
+use App\Form\PlazaTypeForm;
 use App\Form\VisitaTypeForm;
+use App\Form\CocheTypeForm;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,49 +17,91 @@ use Symfony\Component\Routing\Annotation\Route;
 class ModifyParkingController extends AbstractController
 {
     #[Route('/ModifyParking', name: 'app_modify_parking', methods: ['GET', 'POST'])]
-    public function index(Request $request, EntityManagerInterface $entityManager): Response
+    public function modifyParking(Request $request, EntityManagerInterface $entityManager): Response
     {
+        // --- Formulario de Visita ---
         $visita = new Visita();
+        $visitaForm = $this->createForm(VisitaTypeForm::class, $visita);
+        $visitaForm->handleRequest($request);
 
-        // Si el formulario se está enviando
-        if ($request->isMethod('POST')) {
-            $data = $request->request->all()['visita_type_form'] ?? [];
+        if ($visitaForm->isSubmitted() && $visitaForm->isValid()) {
+            $data = $visitaForm->getData();
+            $coche = $data->getCoche();
+            $plaza = $data->getPlaza();
 
-            $cocheId = $data['coche'] ?? null;
-            $plazaId = $data['plaza'] ?? null;
+            if ($coche && $plaza) {
+                // Buscar visita existente
+                $visitaExistente = $entityManager->getRepository(Visita::class)
+                    ->findOneBy(['coche' => $coche, 'plaza' => $plaza]);
 
-            if ($cocheId && $plazaId) {
-                $coche = $entityManager->getRepository(Coche::class)->find($cocheId);
-                $plaza = $entityManager->getRepository(Plaza::class)->find($plazaId);
-
-                if ($coche && $plaza) {
-                    // Buscar una visita existente con la misma combinación coche+plaza
-                    $visitaExistente = $entityManager->getRepository(Visita::class)
-                        ->findOneBy(['coche' => $coche, 'plaza' => $plaza]);
-
-                    if ($visitaExistente) {
-                        $visita = $visitaExistente;
-                    }
-
+                if ($visitaExistente) {
+                    $visita = $visitaExistente;
                     $visita->setCoche($coche);
                     $visita->setPlaza($plaza);
                 }
+
+                $entityManager->persist($visita);
+                $entityManager->flush();
+
+                $this->addFlash('success', 'La visita fue guardada correctamente.');
+                return $this->redirectToRoute('app_modify_parking');
             }
         }
 
-        $form = $this->createForm(VisitaTypeForm::class, $visita);
-        $form->handleRequest($request);
+        // --- Formulario de Coche ---
+        $coche = null;
+        $cocheForm = $this->createForm(CocheTypeForm::class);
+        $cocheForm->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($visita);
-            $entityManager->flush();
+        if ($cocheForm->isSubmitted()) {
+            $matriculaSeleccionada = $cocheForm->get('matricula')->getData();
 
-            $this->addFlash('success', 'La visita fue guardada correctamente.');
-            return $this->redirectToRoute('app_modify_parking');
+            if ($matriculaSeleccionada) {
+                $coche = $entityManager->getRepository(Coche::class)
+                    ->find($matriculaSeleccionada->getMatricula());
+
+                if ($coche && $cocheForm->isValid()) {
+                    $coche->setMarca($cocheForm->get('marca')->getData());
+                    $coche->setModelo($cocheForm->get('modelo')->getData());
+                    $coche->setColor($cocheForm->get('color')->getData());
+
+                    $entityManager->flush();
+                    $this->addFlash('success', 'Coche actualizado correctamente.');
+                    return $this->redirectToRoute('app_modify_parking');
+                }
+            } else {
+                $this->addFlash('error', 'Debes seleccionar una matrícula válida.');
+            }
         }
 
+        // --- Formulario de Plaza ---
+        $plazaForm = $this->createForm(PlazaTypeForm::class);
+        $plazaForm->handleRequest($request);
+            
+        if ($plazaForm->isSubmitted()) {
+            $selectedPlaza = $plazaForm->get('idPlaza')->getData();
+        
+            if ($selectedPlaza instanceof Plaza) {
+                if ($plazaForm->isValid()) {
+                    $tipoSeleccionado = $plazaForm->get('tipo')->getData();
+                    $selectedPlaza->setTipo($tipoSeleccionado);
+                
+                    $entityManager->flush();
+                
+                    $this->addFlash('success', 'Plaza modificada correctamente.');
+                    return $this->redirectToRoute('app_modify_parking');
+                }
+            } else {
+                $this->addFlash('error', 'Debes seleccionar una plaza válida.');
+            }
+        }
+
+        // Renderiza la vista con ambos formularios
         return $this->render('modify_parking/index.html.twig', [
-            'formulario' => $form->createView(),
+            'formulario_visita' => $visitaForm->createView(),
+            'formulario_coche' => $cocheForm->createView(),
+            'formulario_plaza' => $plazaForm->createView(),
+            'coche' => $coche,
         ]);
     }
 }
