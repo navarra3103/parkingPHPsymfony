@@ -15,13 +15,10 @@ class AddPlazaTypeForm extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('idPlaza', TextType::class, [
-                'label' => 'ID de la plaza',
-            ])
             ->add('tipo', EntityType::class, [
                 'class' => Tipo::class,
                 'choice_label' => 'nombre',
-                'label' => 'Tipo de plaza',
+                'label' => 'Tipo de la nueva plaza',
             ]);
     }
 
