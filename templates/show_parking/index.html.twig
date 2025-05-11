@@ -8,8 +8,8 @@
     <header>
         <ul>
             <li><a href="">Mostar</a></li> <!-- ¡Falta cerrar </a> y tiene href vacío! -->
-            <li><a href="{{ path('app_modify_parking', {'plazaId': 1}) }}">Editar</a></li> <!-- Este enlace SÍ recargará -->
-            <li><a href="">Agregar</a></li> <!-- Mismo problema -->
+            <li><a href="{{ path('app_modify_parking')}}">Editar</a></li> <!-- Este enlace SÍ recargará -->
+            <li><a href="{{ path('app_add_parking') }}">Agregar</a></li> <!-- Mismo problema -->
         </ul>
     </header>
     <div class="container">

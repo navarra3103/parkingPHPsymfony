@@ -1,20 +1,49 @@
-{% extends 'base.html.twig' %}
-
-{% block title %}Hello AddParkingController!{% endblock %}
+{% block stylesheets %}
+    <link href="{{ asset('css/styles.css') }}" rel="stylesheet" />
+{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
-
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
-
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>/Users/aguedavadillocarlos/Desktop/app/parkingPHPsymfony/src/Controller/AddParkingController.php</code></li>
-        <li>Your template at <code>/Users/aguedavadillocarlos/Desktop/app/parkingPHPsymfony/templates/add_parking/index.html.twig</code></li>
-    </ul>
-</div>
+    <header>
+        <ul>
+            <li><a href="{{ path('app_show_parking') }}">Mostar</a></li>
+            <li><a href="{{ path('app_modify_parking')}}">Editar</a></li>
+            <li><a href="">Agregar</a></li>
+        </ul>
+    </header>
+    <div>
+        <div>
+            <h2>Coche</h2>
+            {{ form_start(formulario_coche) }}
+                {{ form_row(formulario_coche.matricula) }}
+                {{ form_row(formulario_coche.marca) }}
+                {{ form_row(formulario_coche.modelo) }}
+                {{ form_row(formulario_coche.color) }}
+                <button class="btn btn-primary">Registrar Coche</button>
+            {{ form_end(formulario_coche) }}
+        </div>
+        <div>
+            <h2>Plaza</h2>
+            {{ form_start(formulario_plaza) }}
+                {{ form_row(formulario_plaza.idPlaza) }}
+                {{ form_row(formulario_plaza.tipo) }}
+                <button class="btn btn-primary">Registrar Plaza</button>
+            {{ form_end(formulario_plaza) }}
+        </div>
+        <div>
+            <h2>Tipo de plazas</h2>
+            {{ form_start(formulario_tipo) }}
+                {{ form_row(formulario_tipo.nombre) }}
+                {{ form_row(formulario_tipo.color) }}
+                <button class="btn btn-primary">Registrar Tipo</button>
+            {{ form_end(formulario_tipo) }}
+        </div>
+        <div>
+            <h2>Lista de estados</h2>
+            {{ form_start(formulario_estado) }}
+                {{ form_row(formulario_estado.nombre) }}
+                <button class="btn btn-primary">Registrar Estado</button>
+            {{ form_end(formulario_estado) }}
+        </div>
+    </div>
+    <footer></footer>
 {% endblock %}
