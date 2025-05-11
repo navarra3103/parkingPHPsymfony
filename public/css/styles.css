@@ -32,7 +32,6 @@
     .container {
         width: 100%;
         height: auto;
-        background-color: aquamarine;
 
         & > .parking-container {
             width: 75%;
@@ -45,7 +44,6 @@
 
             > .parking-item {
                 background-color: antiquewhite;
-                user-select: none; /* Evita la selección de texto */
             }
         }
         & > .legend {

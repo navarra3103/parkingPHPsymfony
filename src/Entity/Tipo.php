@@ -6,6 +6,7 @@ use App\Repository\TipoRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: TipoRepository::class)]
+#[ORM\Table(name: "Tipo")]
 class Tipo
 {
     #[ORM\Id]

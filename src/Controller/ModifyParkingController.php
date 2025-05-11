@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Visita;
+use App\Entity\Coche;
 use App\Entity\Plaza;
 use App\Form\VisitaTypeForm;
 use Doctrine\ORM\EntityManagerInterface;
@@ -13,48 +14,50 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class ModifyParkingController extends AbstractController
 {
-    #[Route('/ModifyParking/{plazaId}', name: 'app_modify_parking', methods: ['GET', 'POST'])]
-    public function index(Request $request, EntityManagerInterface $entityManager, int $plazaId): Response
+    #[Route('/ModifyParking', name: 'app_modify_parking', methods: ['GET', 'POST'])]
+    public function index(Request $request, EntityManagerInterface $entityManager): Response
     {
-        // 1. Obtener la plaza
-        $plaza = $entityManager->getRepository(Plaza::class)->find($plazaId);
-        if (!$plaza) {
-            throw $this->createNotFoundException(message: 'No se encontró la plaza con el ID: '.$plazaId);
+        $visita = new Visita();
+
+        // Si el formulario se está enviando
+        if ($request->isMethod('POST')) {
+            $data = $request->request->all()['visita_type_form'] ?? [];
+
+            $cocheId = $data['coche'] ?? null;
+            $plazaId = $data['plaza'] ?? null;
+
+            if ($cocheId && $plazaId) {
+                $coche = $entityManager->getRepository(Coche::class)->find($cocheId);
+                $plaza = $entityManager->getRepository(Plaza::class)->find($plazaId);
+
+                if ($coche && $plaza) {
+                    // Buscar una visita existente con la misma combinación coche+plaza
+                    $visitaExistente = $entityManager->getRepository(Visita::class)
+                        ->findOneBy(['coche' => $coche, 'plaza' => $plaza]);
+
+                    if ($visitaExistente) {
+                        $visita = $visitaExistente;
+                    }
+
+                    $visita->setCoche($coche);
+                    $visita->setPlaza($plaza);
+                }
+            }
         }
 
-        // 2. Obtener la visita actual de la plaza o crear una nueva
-        $visita = $entityManager->getRepository(Visita::class)->findOneBy(['Plaza' => $plaza]);
-        $esEdicion = true; // Inicialmente asumimos que es edición
-        if (!$visita) {
-            $visita = new Visita();
-            $visita->setPlaza($plaza); // Asignar la plaza a la nueva visita
-            $esEdicion = false; // Si no existía, es creación
-        }
-
-        // 3. Crear y manejar el formulario
         $form = $this->createForm(VisitaTypeForm::class, $visita);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            if ($esEdicion) {
-                $entityManager->flush();
-                $this->addFlash('success', 'La visita ha sido modificada correctamente.');
-            } else {
-                $entityManager->persist($visita);
-                $entityManager->flush();
-                $this->addFlash('success', 'La visita ha sido creada correctamente.');
-            }
+            $entityManager->persist($visita);
+            $entityManager->flush();
 
-            // Redirigir a la misma página para mostrar los datos actualizados
-            return $this->redirectToRoute('app_modify_parking_plaza', ['plazaId' => $plazaId]);
+            $this->addFlash('success', 'La visita fue guardada correctamente.');
+            return $this->redirectToRoute('app_modify_parking');
         }
 
-        // 4. Renderizar la plantilla
-        return $this->render('modify_parking/index.html.twig', [ // Asegúrate de que este template existe
+        return $this->render('modify_parking/index.html.twig', [
             'formulario' => $form->createView(),
-            'visita' => $visita,
-            'plaza' => $plaza, // Pasar la plaza a la plantilla para mostrar información
-            'esEdicion' => $esEdicion,
         ]);
     }
 }

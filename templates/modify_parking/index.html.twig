@@ -5,15 +5,19 @@
 {% block body %}
     <header>
         <ul>
-            <li><a href="{{ path('app_show_parking') }}">Mostar</li>
-            <li><a href="">Editar</li>
-            <li><a href="">Agregar</li>
+            <li><a href="{{ path('app_show_parking') }}">Mostar</a></li>
+            <li><a href="">Editar</a></li>
+            <li><a href="">Agregar</a></li>
         </ul>
     </header>
 
     {{ form_start(formulario) }}
-        {{ form_widget(formulario) }}
-        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+        {{ form_row(formulario.coche) }}      {# coche → choice_label = matrícula #}
+        {{ form_row(formulario.plaza) }}
+        {{ form_row(formulario.estado) }}
+        {{ form_row(formulario.entrada) }}
+        {{ form_row(formulario.salida) }}
+        <button class="btn btn-primary">Guardar Visita</button>
     {{ form_end(formulario) }}
 
     <a href="{{ path('app_modify_parking') }}">Volver</a>
