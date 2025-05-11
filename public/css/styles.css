@@ -45,12 +45,16 @@
 
             > .parking-item {
                 background-color: antiquewhite;
+                user-select: none; /* Evita la selección de texto */
             }
         }
-        & > .leyes {
+        & > .legend {
             width: 25%;
             height: 100%;
             background-color: #aaa;
             float: right;
+            display: flex;
+            flex-direction: column;
+            justify-content: center; 
         }
     }

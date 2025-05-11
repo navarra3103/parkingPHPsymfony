@@ -1,43 +1,36 @@
 <?php
 
 namespace App\Entity;
+
 use Doctrine\DBAL\Types\Types;
 use App\Repository\VisitaRepository;
 use Doctrine\ORM\Mapping as ORM;
+use App\Entity\Estado;
 
-/**
- * @ORM\Entity(repositoryClass=VisitaRepository::class)
- */
+#[ORM\Entity(repositoryClass: VisitaRepository::class)]
 class Visita
 {
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column(type: "integer")]
-    private ?int $IdVisita = null;
-
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $entrada = null;
     
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]    
     private ?\DateTimeInterface $salida = null;
 
     #[ORM\ManyToOne(targetEntity: Estado::class)]
     #[ORM\JoinColumn(name: "Estado_IdEstado", referencedColumnName: "IdEstado", nullable: false)]
-    private ?Estado $Estado = null;
+    private ?Estado $estado = null;
 
+    #[ORM\Id]
     #[ORM\ManyToOne(targetEntity: Coche::class)]
     #[ORM\JoinColumn(name: "Coche_IdCoche", referencedColumnName: "IdCoche", nullable: false)]
-    private ?Coche $Coche = null;
+    private ?Coche $coche = null;
 
+    #[ORM\Id]
     #[ORM\ManyToOne(targetEntity: Plaza::class)]
     #[ORM\JoinColumn(name: "Plaza_IdPlaza", referencedColumnName: "IdPlaza", nullable: false)]
-    private ?Plaza $Plaza = null;
-    // Métodos getter y setter para los atributos
+    private ?Plaza $plaza = null;
 
-    public function getIdVisita(): ?int
-    {
-        return $this->IdVisita;
-    }
+    // Métodos getter y setter
 
     public function getEntrada(): ?\DateTimeInterface
     {
@@ -63,34 +56,34 @@ class Visita
 
     public function getEstado(): ?Estado
     {
-        return $this->Estado;
+        return $this->estado;
     }
 
-    public function setEstado(?Estado $Estado): self
+    public function setEstado(?Estado $estado): self
     {
-        $this->Estado = $Estado;
+        $this->estado = $estado;
         return $this;
     }
 
     public function getCoche(): ?Coche
     {
-        return $this->Coche;
+        return $this->coche;
     }
 
-    public function setCoche(?Coche $Coche): self
+    public function setCoche(?Coche $coche): self
     {
-        $this->Coche = $Coche;
+        $this->coche = $coche;
         return $this;
     }
 
     public function getPlaza(): ?Plaza
     {
-        return $this->Plaza;
+        return $this->plaza;
     }
 
-    public function setPlaza(?Plaza $Plaza): self
+    public function setPlaza(?Plaza $plaza): self
     {
-        $this->Plaza = $Plaza;
+        $this->plaza = $plaza;
         return $this;
     }
 }
