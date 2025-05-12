@@ -1,84 +1,92 @@
 <?php
 
 namespace App\Entity;
-use Doctrine\DBAL\Types\Types;
 
+use Doctrine\DBAL\Types\Types;
 use App\Repository\VisitaRepository;
 use Doctrine\ORM\Mapping as ORM;
+use App\Entity\Estado;
+use App\Entity\Coche;
+use App\Entity\Plaza;
 
-#[ORM\Entity]
-class Vista
+#[ORM\Entity(repositoryClass: VisitaRepository::class)]
+#[ORM\Table(name: "Visita")]
+class Visita
 {
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
-    private ?int $IdVisita = null;
+    #[ORM\Column(name: "Entrada", type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $entrada = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $fecha = null;
+    #[ORM\Column(name: "Salida", type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $salida = null;
 
     #[ORM\ManyToOne(targetEntity: Estado::class)]
-    #[ORM\JoinColumn(name: 'Estado_IdEstado', referencedColumnName: 'IdEstado', nullable: false)]
-    private ?Estado $Estado = null;
+    #[ORM\JoinColumn(name: "Estado", referencedColumnName: "IdEstado", nullable: false)]
+    private ?Estado $estado = null;
 
+    #[ORM\Id]
     #[ORM\ManyToOne(targetEntity: Coche::class)]
-    #[ORM\JoinColumn(name: 'Matricula', referencedColumnName: 'Matricula', nullable: false)]
-    private ?Coche $Matricula = null;
+    #[ORM\JoinColumn(name: "Coche", referencedColumnName: "Matricula", nullable: false)]
+    private ?Coche $coche = null;
 
+    #[ORM\Id]
     #[ORM\ManyToOne(targetEntity: Plaza::class)]
-    #[ORM\JoinColumn(name: 'Plaza_IdPlaza', referencedColumnName: 'IdPlaza', nullable: false)]
-    private ?Plaza $Plaza = null;
+    #[ORM\JoinColumn(name: "Plaza", referencedColumnName: "IdPlaza", nullable: false)]
+    private ?Plaza $plaza = null;
 
-    public function getIdVisita(): ?int
+    // Métodos getter y setter
+
+    public function getEntrada(): ?\DateTimeInterface
     {
-        return $this->IdVisita;
+        return $this->entrada;
     }
 
-    public function getFecha(): ?\DateTimeInterface
+    public function setEntrada(?\DateTimeInterface $entrada): self
     {
-        return $this->fecha;
+        $this->entrada = $entrada;
+        return $this;
     }
 
-    public function setFecha(?\DateTimeInterface $fecha): self
+    public function getSalida(): ?\DateTimeInterface
     {
-        $this->fecha = $fecha;
+        return $this->salida;
+    }
 
+    public function setSalida(?\DateTimeInterface $salida): self
+    {
+        $this->salida = $salida;
         return $this;
     }
 
     public function getEstado(): ?Estado
     {
-        return $this->Estado;
+        return $this->estado;
     }
 
-    public function setEstado(?Estado $Estado): self
+    public function setEstado(?Estado $estado): self
     {
-        $this->Estado = $Estado;
-
+        $this->estado = $estado;
         return $this;
     }
 
-    public function getMatricula(): ?Coche
+    public function getCoche(): ?Coche
     {
-        return $this->Matricula;
+        return $this->coche;
     }
 
-    public function setMatricula(?Coche $Matricula): self
+    public function setCoche(?Coche $coche): self
     {
-        $this->Matricula = $Matricula;
-
+        $this->coche = $coche;
         return $this;
     }
 
     public function getPlaza(): ?Plaza
     {
-        return $this->Plaza;
+        return $this->plaza;
     }
 
-    public function setPlaza(?Plaza $Plaza): self
+    public function setPlaza(?Plaza $plaza): self
     {
-        $this->Plaza = $Plaza;
-
+        $this->plaza = $plaza;
         return $this;
     }
 }

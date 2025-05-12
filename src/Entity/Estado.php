@@ -6,15 +6,16 @@ use App\Repository\EstadoRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: EstadoRepository::class)]
+#[ORM\Table(name: "Estado")]
 class Estado
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
+    #[ORM\Column(name: "IdEstado", type: 'integer')]
     private ?int $IdEstado = null;
 
-    #[ORM\Column(type: 'string', length: 255)]
-    private string $nombre;
+    #[ORM\Column(name: "Nombre", type: 'string', length: 255)]
+    private string $Nombre;
 
     public function getIdEstado(): ?int
     {
@@ -23,13 +24,12 @@ class Estado
 
     public function getNombre(): string
     {
-        return $this->nombre;
+        return $this->Nombre;
     }
 
-    public function setNombre(string $nombre): self
+    public function setNombre(string $Nombre): self
     {
-        $this->nombre = $nombre;
-
+        $this->Nombre = $Nombre;
         return $this;
     }
 }

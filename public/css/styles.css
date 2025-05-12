@@ -1,0 +1,58 @@
+  header {
+        background-color: #333;
+        color: white;
+        padding: 10px;
+        & > ul {
+            display: flex;
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+
+            & > li {
+                margin-right: 20px;
+                width: 33%;
+                text-align: center;
+
+                & > a {
+                    color: white;
+                    text-decoration: none;
+                    width: 100%;
+                    display: block;
+
+
+                    &:hover {
+                        text-decoration: underline;
+                        background-color: #555;
+                        
+                    }
+                }
+            }
+        } 
+    }
+    .container {
+        width: 100%;
+        height: auto;
+
+        & > .parking-container {
+            width: 75%;
+            height: 100%;
+            background-color: #ccc;
+            float: left;
+            display: grid; 
+            grid-template-columns: repeat(7, 1fr); 
+            gap: 15px;
+
+            > .parking-item {
+                max-height: 100px;
+            }
+        }
+        & > .legend {
+            width: 25%;
+            height: 100%;
+            background-color: #aaa;
+            float: right;
+            display: flex;
+            flex-direction: column;
+            justify-content: center; 
+        }
+    }
