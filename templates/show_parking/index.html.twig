@@ -17,6 +17,12 @@
             {% for plaza in parkings %}
                 <div class="parking-item" style="margin: 5px; padding: 10px; background-color: {{ plaza.Tipo.Color }};">
                     ID Plaza: {{ plaza.IdPlaza }}
+
+                    {% if matriculas[plaza.IdPlaza] is defined %}
+            <br>Matrícula: {{ matriculas[plaza.IdPlaza] }}
+        {% else %}
+            <br>Matrícula: <em>No asignada</em>
+        {% endif %}
                 </div>
             {% else %}
                 <p>No hay plazas registradas.</p>
