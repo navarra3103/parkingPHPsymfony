@@ -32,27 +32,37 @@ class ModifyParkingController extends AbstractController
 
         if ($visitaForm->isSubmitted() && $visitaForm->isValid()) {
             $data = $visitaForm->getData();
-            $coche = $data->getCoche();
             $plaza = $data->getPlaza();
+            $coche = $data->getCoche();
+            $estado = $data->getEstado();
+            $entrada = $data->getEntrada();
+            $salida = $data->getSalida();
 
-            if ($coche && $plaza) {
-                // Buscar visita existente
+            if ($plaza) {
+                // Buscar si ya hay una visita con esa plaza
                 $visitaExistente = $entityManager->getRepository(Visita::class)
-                    ->findOneBy(['coche' => $coche, 'plaza' => $plaza]);
+                    ->findOneBy(['plaza' => $plaza]);
 
                 if ($visitaExistente) {
-                    $visita = $visitaExistente;
-                    $visita->setCoche($coche);
-                    $visita->setPlaza($plaza);
+                    // Actualizar la visita existente
+                    $visitaExistente->setCoche($coche);
+                    $visitaExistente->setEstado($estado);
+                    $visitaExistente->setEntrada($entrada);
+                    $visitaExistente->setSalida($salida);
+
+                    $entityManager->flush();
+                    $this->addFlash('success', 'La visita existente fue modificada.');
+                } else {
+                    // Crear una nueva visita
+                    $entityManager->persist($visita);
+                    $entityManager->flush();
+                    $this->addFlash('success', 'Se creó una nueva visita.');
                 }
 
-                $entityManager->persist($visita);
-                $entityManager->flush();
-
-                $this->addFlash('success', 'La visita fue guardada correctamente.');
                 return $this->redirectToRoute('app_modify_parking');
             }
         }
+
 
         // --- Formulario de Coche ---
         $coche = null;

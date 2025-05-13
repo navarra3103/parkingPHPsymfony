@@ -15,18 +15,22 @@
     <div class="container">
         <div class="parking-container">
             {% for plaza in parkings %}
-                <div class="parking-item" style="margin: 5px; padding: 10px; background-color: {{ plaza.Tipo.Color }};">
-                    ID Plaza: {{ plaza.IdPlaza }}
-
-                    {% if matriculas[plaza.IdPlaza] is defined %}
-            <br>Matrícula: {{ matriculas[plaza.IdPlaza] }}
+    <div class="parking-item" style="margin: 5px; padding: 10px; background-color: {{ plaza.Tipo.Color }};">
+        <strong>ID Plaza:</strong> {{ plaza.IdPlaza }}
+        
+        {% set visita = mapaVisitas[plaza.IdPlaza] ?? null %}
+        
+        {% if visita %}
+            <br><strong>Matrícula:</strong> {{ visita.matricula }}
+            <br><strong>Estado:</strong> {{ visita.estado }}
         {% else %}
-            <br>Matrícula: <em>No asignada</em>
+            <br><strong>Matrícula:</strong> <em>No asignada</em>
+            <br><strong>Estado:</strong> <em>No asignado</em>
         {% endif %}
-                </div>
-            {% else %}
-                <p>No hay plazas registradas.</p>
-            {% endfor %}
+    </div>
+{% else %}
+    <p>No hay plazas registradas.</p>
+{% endfor %}
         </div>
         <div class="legend">
             {% for tipos in types %}
