@@ -43,6 +43,8 @@ final class ShowParkingController extends AbstractController
                 $mapaVisitas[$plaza->getIdPlaza()] = [
                     'matricula' => $coche->getMatricula(),
                     'estado' => $estado->getNombre(),
+                    'entrada' => $visita->getEntrada(),
+                    'salida' => $visita->getSalida(),
                 ];
             }
         }

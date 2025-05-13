@@ -23,6 +23,12 @@
         {% if visita %}
             <br><strong>Matrícula:</strong> {{ visita.matricula }}
             <br><strong>Estado:</strong> {{ visita.estado }}
+                {% if visita.entrada %}
+                    <br><strong>Entrada:</strong> {{ visita.entrada|date('d/m/Y H:i') }}
+                {% endif %}
+                {% if visita.salida %}
+                    <br><strong>Salida:</strong> {{ visita.salida|date('d/m/Y H:i') }}
+                {% endif %}
         {% else %}
             <br><strong>Matrícula:</strong> <em>No asignada</em>
             <br><strong>Estado:</strong> <em>No asignado</em>
