@@ -21,28 +21,6 @@
                 <button class="btn btn-primary">Registrar Coche</button>
             {{ form_end(formulario_coche) }}
         </div>
-        <div>
-            <h2>Plaza</h2>
-            {{ form_start(formulario_plaza) }}
-                {{ form_row(formulario_plaza.tipo) }}
-                <button class="btn btn-primary">Registrar Plaza</button>
-            {{ form_end(formulario_plaza) }}
-        </div>
-        <div>
-            <h2>Tipo de plazas</h2>
-            {{ form_start(formulario_tipo) }}
-                {{ form_row(formulario_tipo.nombre) }}
-                {{ form_row(formulario_tipo.color) }}
-                <button class="btn btn-primary">Registrar Tipo</button>
-            {{ form_end(formulario_tipo) }}
-        </div>
-        <div>
-            <h2>Lista de estados</h2>
-            {{ form_start(formulario_estado) }}
-                {{ form_row(formulario_estado.nombre) }}
-                <button class="btn btn-primary">Registrar Estado</button>
-            {{ form_end(formulario_estado) }}
-        </div>
     </div>
     <footer></footer>
 {% endblock %}

@@ -8,9 +8,6 @@ use App\Entity\Tipo;
 use App\Entity\Estado;
 
 use App\Form\AddCocheTypeForm;
-use App\Form\AddPlazaTypeForm;
-use App\Form\AddTipoTypeForm;
-use App\Form\AddEstadoTypeForm;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -38,56 +35,8 @@ final class AddParkingController extends AbstractController
             return $this->redirectToRoute('app_add_parking');
         }
 
-        // --------------------------
-        // FORMULARIO: PLAZA (nueva)
-        // --------------------------
-        $plaza = new Plaza();
-        $formPlaza = $this->createForm(AddPlazaTypeForm::class, $plaza);
-        $formPlaza->handleRequest($request);
-
-        if ($formPlaza->isSubmitted() && $formPlaza->isValid()) {
-            $entityManager->persist($plaza);
-            $entityManager->flush();
-
-            $this->addFlash('success', 'Plaza añadida correctamente.');
-            return $this->redirectToRoute('app_add_parking');
-        }
-
-        // -------------------------
-        // FORMULARIO: TIPO (nuevo)
-        // -------------------------
-        $tipo = new Tipo();
-        $formTipo = $this->createForm(AddTipoTypeForm::class, $tipo);
-        $formTipo->handleRequest($request);
-
-        if ($formTipo->isSubmitted() && $formTipo->isValid()) {
-            $entityManager->persist($tipo);
-            $entityManager->flush();
-
-            $this->addFlash('success', 'Tipo añadido correctamente.');
-            return $this->redirectToRoute('app_add_parking');
-        }
-
-        // ---------------------------
-        // FORMULARIO: ESTADO (nuevo)
-        // ---------------------------
-        $estado = new Estado();
-        $formEstado = $this->createForm(AddEstadoTypeForm::class, $estado);
-        $formEstado->handleRequest($request);
-
-        if ($formEstado->isSubmitted() && $formEstado->isValid()) {
-            $entityManager->persist($estado);
-            $entityManager->flush();
-
-            $this->addFlash('success', 'Estado añadido correctamente.');
-            return $this->redirectToRoute('app_add_parking');
-        }
-
         return $this->render('add_parking/index.html.twig', [
-            'formulario_coche'   => $formCoche->createView(),
-            'formulario_plaza'   => $formPlaza->createView(),
-            'formulario_tipo'    => $formTipo->createView(),
-            'formulario_estado'  => $formEstado->createView(),
+            'formulario_coche'   => $formCoche->createView()
         ]);
     }
 }

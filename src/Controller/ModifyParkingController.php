@@ -8,11 +8,8 @@ use App\Entity\Plaza;
 use App\Entity\Tipo;
 use App\Entity\Estado;
 
-use App\Form\PlazaTypeForm;
 use App\Form\VisitaTypeForm;
 use App\Form\CocheTypeForm;
-use App\Form\TipoTypeForm;
-use App\Form\EstadoTypeForm;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -90,77 +87,11 @@ class ModifyParkingController extends AbstractController
             }
         }
 
-        // --- Formulario de Plaza ---
-        $plazaForm = $this->createForm(PlazaTypeForm::class);
-        $plazaForm->handleRequest($request);
-
-        if ($plazaForm->isSubmitted()) {
-            $selectedPlaza = $plazaForm->get('idPlaza')->getData();
-        
-            if ($selectedPlaza instanceof Plaza) {
-                if ($plazaForm->isValid()) {
-                    $tipoSeleccionado = $plazaForm->get('tipo')->getData();
-                    $selectedPlaza->setTipo($tipoSeleccionado);
-                
-                    $entityManager->flush();
-                
-                    $this->addFlash('success', 'Plaza modificada correctamente.');
-                    return $this->redirectToRoute('app_modify_parking');
-                }
-            } else {
-                $this->addFlash('error', 'Debes seleccionar una plaza válida.');
-            }
-        }
-        // --- Formulario de Tipo ---
-        $tipoForm = $this->createForm(TipoTypeForm::class);
-        $tipoForm->handleRequest($request);
-
-        if ($tipoForm->isSubmitted()) {
-            $tipoSeleccionado = $tipoForm->get('idTipo')->getData();
-        
-            if ($tipoSeleccionado instanceof Tipo) {
-                if ($tipoForm->isValid()) {
-                    $tipoSeleccionado->setNombre($tipoForm->get('nombre')->getData());
-                    $tipoSeleccionado->setColor($tipoForm->get('color')->getData());
-                
-                    $entityManager->flush();
-                
-                    $this->addFlash('success', 'Tipo actualizado correctamente.');
-                    return $this->redirectToRoute('app_modify_parking');
-                }
-            } else {
-                $this->addFlash('error', 'Debes seleccionar un tipo válido.');
-            }
-        }
-        // --- Formulario de Estado ---
-        $estadoForm = $this->createForm(EstadoTypeForm::class);
-        $estadoForm->handleRequest($request);
-
-        if ($estadoForm->isSubmitted()) {
-            $estadoSeleccionado = $estadoForm->get('idEstado')->getData();
-        
-            if ($estadoSeleccionado instanceof Estado) {
-                if ($estadoForm->isValid()) {
-                    $estadoSeleccionado->setNombre($estadoForm->get('nombre')->getData());
-                
-                    $entityManager->flush();
-                
-                    $this->addFlash('success', 'Estado actualizado correctamente.');
-                    return $this->redirectToRoute('app_modify_parking');
-                }
-            } else {
-                $this->addFlash('error', 'Debes seleccionar un estado válido.');
-            }
-        }
-
         // Renderiza la vista con ambos formularios
         return $this->render('modify_parking/index.html.twig', [
             'formulario_visita' => $visitaForm->createView(),
             'formulario_coche' => $cocheForm->createView(),
-            'formulario_plaza' => $plazaForm->createView(),
-            'formulario_tipo' => $tipoForm->createView(),
-            'formulario_estado' => $estadoForm->createView(),
-            'coche' => $coche,
+            'coche' => $coche
         ]);
     }
 }
