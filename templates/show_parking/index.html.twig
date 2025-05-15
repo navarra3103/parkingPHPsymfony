@@ -3,6 +3,42 @@
 {% block stylesheets %}
     <link href="{{ asset('css/styles.css') }}" rel="stylesheet" />
 {% endblock %}
+{% block javascripts %}
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Cargar los colores de las plazas desde el endpoint
+            try {
+                // Llamada al endpoint que devuelve las plazas con sus colores
+                const response = await fetch('/api/plazas');
+                if (!response.ok) throw new Error('No se pudo cargar la información de las plazas');
+
+                const data = await response.json();
+
+                // Crear un diccionario: IdPlaza => Color
+                const coloresPorPlaza = {};
+                data.forEach(plaza => {
+                    coloresPorPlaza[plaza.id] = plaza.color;
+                });
+
+                // Buscar todos los rect con data-id dentro del SVG específico
+                const svg = document.querySelector('svg.image-overlay');
+                const rectangulos = svg.querySelectorAll('rect[data-id]');
+
+                rectangulos.forEach(rect => {
+                    const id = rect.getAttribute('data-id');
+                    const color = coloresPorPlaza[id];
+
+                    if (color) {
+                        rect.setAttribute('fill', color);
+                    }
+                });
+
+            } catch (error) {
+                console.error('Error al cargar o aplicar los colores:', error);
+            }
+        });
+    </script>
+{% endblock %}
 
 {% block body %}
     <header>
@@ -14,29 +50,122 @@
     </header>
     <div class="container">
         <div class="parking-container">
-            {% for plaza in parkings %}
-    <div class="parking-item" style="margin: 5px; padding: 10px; background-color: {{ plaza.Tipo.Color }};">
-        <strong>ID Plaza:</strong> {{ plaza.IdPlaza }}
-        
-        {% set visita = mapaVisitas[plaza.IdPlaza] ?? null %}
-        
-        {% if visita %}
-            <br><strong>Matrícula:</strong> {{ visita.matricula }}
-            <br><strong>Estado:</strong> {{ visita.estado }}
-                {% if visita.entrada %}
-                    <br><strong>Entrada:</strong> {{ visita.entrada|date('d/m/Y H:i') }}
-                {% endif %}
-                {% if visita.salida %}
-                    <br><strong>Salida:</strong> {{ visita.salida|date('d/m/Y H:i') }}
-                {% endif %}
-        {% else %}
-            <br><strong>Matrícula:</strong> <em>No asignada</em>
-            <br><strong>Estado:</strong> <em>No asignado</em>
-        {% endif %}
-    </div>
-{% else %}
-    <p>No hay plazas registradas.</p>
-{% endfor %}
+            <div class="parking-images">
+                <img src="{{ asset('image/parking-overlay.png') }}" alt="" srcset="" class="image-base">
+                <svg  viewBox="0 0 3600 2501" style="border: 1px solid transparent; margin: 0; padding: 0;"  xmlns="http://www.w3.org/2000/svg" class="image-overlay">
+                    <rect width="151" height="72" x="760" y="910" fill="green" transform="rotate(-45 40 50)" data-id="1" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                        <rect width="151" height="72" x="960" y="1035" fill="green" transform="rotate(-45 53 219)" data-id="2" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                        <rect width="151" height="72" x="1160" y="1160" fill="green" transform="rotate(-45 66 388)" data-id="3" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                        <rect width="151" height="72" x="1360" y="1284" fill="green" transform="rotate(-45 79 557)" data-id="4" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                        <rect width="151" height="72" x="1560" y="1409" fill="green" transform="rotate(-45 99 736)" data-id="5" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                        <rect width="151" height="72" x="1760" y="1534" fill="green" transform="rotate(-45 119 915)" data-id="6" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                        <rect width="151" height="72" x="1960" y="1655" fill="green" transform="rotate(-45 133 1080)" data-id="7" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                        <rect width="151" height="72" x="2160" y="1776" fill="green" transform="rotate(-45 156 1260)" data-id="8" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                        <rect width="151" height="72" x="2360" y="1895" fill="green" transform="rotate(-45 179 1435)" data-id="9" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                        <rect width="151" height="72" x="2560" y="2016" fill="green" transform="rotate(-45 202 1605)" data-id="10" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                        <rect width="151" height="72" x="2760" y="2130" fill="green" transform="rotate(-45 228 1770)" data-id="11" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                        <rect width="151" height="72" x="2960" y="2248" fill="green" transform="rotate(-45 248 1945)" data-id="12" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                        <rect width="151" height="72" x="3160" y="2368" fill="green" transform="rotate(-45 271 2115)" data-id="13" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                        <rect width="151" height="72" x="3360" y="2488" fill="green" transform="rotate(-45 294 2285)" data-id="14" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                        <rect width="151" height="72" x="3560" y="2608" fill="green" transform="rotate(-45 317 2455)" data-id="15" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                        <rect width="151" height="72" x="3760" y="2728" fill="green" transform="rotate(-45 340 2625)" data-id="16" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                        <rect width="151" height="72" x="3960" y="2844" fill="green" transform="rotate(-45 363 2795)" data-id="17" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                        <rect width="151" height="72" x="4173" y="2974" fill="lime" transform="rotate(-45 383 2990)" data-id="18" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                            <rect width="151" height="72" x="4373" y="3094" fill="lime" transform="rotate(-45 403 3160)" data-id="19" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                            <rect width="151" height="72" x="4573" y="3214" fill="lime" transform="rotate(-45 423 3330)" data-id="20" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                            <rect width="151" height="72" x="4769" y="3334" fill="lime" transform="rotate(-45 443 3501)" data-id="21" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+
+                    <rect width="151" height="72" x="500" y="30" fill="green" transform="rotate(45 166 217)" data-id="22" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                        <rect width="151" height="72" x="600" y="30" fill="green" transform="rotate(45 275 230)" data-id="23" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                        <rect width="151" height="72" x="700" y="30" fill="green" transform="rotate(45 384 243)" data-id="24" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                        <rect width="151" height="72" x="800" y="30" fill="green" transform="rotate(45 490 255)" data-id="25" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                        <rect width="151" height="72" x="900" y="30" fill="green" transform="rotate(45 590 270)" data-id="26" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                        <rect width="151" height="72" x="1000" y="30" fill="green" transform="rotate(45 694 285)" data-id="27" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                        <rect width="151" height="72" x="1100" y="30" fill="green" transform="rotate(45 799 298)" data-id="28" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                        <rect width="151" height="72" x="1200" y="30" fill="green" transform="rotate(45 905 310)" data-id="29" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                        <rect width="151" height="72" x="1300" y="30" fill="green" transform="rotate(45 1010 325)" data-id="30" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                        <rect width="151" height="72" x="1400" y="30" fill="green" transform="rotate(45 1115 340)" data-id="31" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+
+                    <rect width="151" height="72" x="1652" y="407" fill="green" data-id="32" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                        <rect width="151" height="72" x="1811" y="407" fill="green" data-id="33" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                        <rect width="151" height="72" x="1968" y="407" fill="green" data-id="34" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                        <rect width="151" height="72" x="2123" y="407" fill="green" data-id="35" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                        <rect width="151" height="72" x="2282" y="407" fill="green" data-id="36" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                        <rect width="151" height="72" x="2439" y="407" fill="green" data-id="37" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+
+                    <rect width="151" height="72" x="2627" y="643" fill="cyan" data-id="38" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                        <rect width="151" height="72" x="2627" y="722" fill="cyan" data-id="39" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                        <rect width="151" height="72" x="2627" y="800" fill="cyan" data-id="40" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                        <rect width="151" height="72" x="2627" y="878" fill="cyan" data-id="41" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+
+                        <rect width="151" height="72" x="2627" y="1123" fill="cyan" data-id="42" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                            <rect width="151" height="72" x="2627" y="1204" fill="cyan" data-id="43" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                            <rect width="151" height="72" x="2627" y="1282" fill="cyan" data-id="44" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                            <rect width="151" height="72" x="2627" y="1362" fill="cyan" data-id="45" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                            <rect width="151" height="72" x="2627" y="1440" fill="cyan" data-id="46" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                            <rect width="151" height="72" x="2627" y="1518" fill="cyan" data-id="47" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+
+                        <rect width="167" height="76" x="2627" y="1750" fill="red" data-id="48" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                            <rect width="167" height="76" x="2627" y="1830" fill="red" data-id="49" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                            <rect width="167" height="76" x="2627" y="1908" fill="red" data-id="50" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                            <rect width="167" height="76" x="2627" y="1986" fill="red" data-id="51" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                            <rect width="167" height="76" x="2627" y="2064" fill="red" data-id="52" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+
+                            <rect width="153" height="76" x="2632" y="2300" fill="red" data-id="53" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+
+                    <rect width="151" height="72" x="2949" y="544" fill="green" data-id="54" onclick="alert('¡Hiciste clic en el rectángulo!')" /> <rect width="151" height="72" x="3107" y="544" fill="green" data-id="79"  onclick="alert('¡Hiciste clic en el rectángulo!')" /> 
+                        <rect width="151" height="72" x="2949" y="622" fill="green" data-id="55" onclick="alert('¡Hiciste clic en el rectángulo!')" /> <rect width="151" height="72" x="3107" y="622" fill="green" data-id="80" onclick="alert('¡Hiciste clic en el rectángulo!')" /> 
+                        <rect width="151" height="72" x="2949" y="700" fill="green" data-id="56" onclick="alert('¡Hiciste clic en el rectángulo!')" /> <rect width="151" height="72" x="3107" y="700" fill="green" data-id="81" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                        <rect width="151" height="72" x="2949" y="778" fill="green" data-id="57" onclick="alert('¡Hiciste clic en el rectángulo!')" /> <rect width="151" height="72" x="3107" y="778" fill="green" data-id="82" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                            <rect width="151" height="72" x="2949" y="856" fill="blue" data-id="58" onclick="alert('¡Hiciste clic en el rectángulo!')" /> <rect width="151" height="72" x="3107" y="856" fill="blue" data-id="83" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                            <rect width="151" height="72" x="2949" y="935" fill="blue" data-id="59" onclick="alert('¡Hiciste clic en el rectángulo!')" /> <rect width="151" height="72" x="3107" y="935" fill="blue" data-id="84" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                            <rect width="151" height="72" x="2949" y="1014" fill="blue" data-id="60" onclick="alert('¡Hiciste clic en el rectángulo!')" /> <rect width="151" height="72" x="3107" y="1014" fill="blue" data-id="85" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                            <rect width="151" height="72" x="2949" y="1093" fill="blue" data-id="61" onclick="alert('¡Hiciste clic en el rectángulo!')" /> <rect width="151" height="72" x="3107" y="1093" fill="blue" data-id="86" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                            <rect width="151" height="72" x="2949" y="1172" fill="blue" data-id="62" onclick="alert('¡Hiciste clic en el rectángulo!')" /> <rect width="151" height="72" x="3107" y="1172" fill="blue" data-id="87" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                            <rect width="151" height="72" x="2949" y="1251" fill="blue" data-id="67" onclick="alert('¡Hiciste clic en el rectángulo!')" /> <rect width="151" height="72" x="3107" y="1251" fill="blue" data-id="88" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                            <rect width="151" height="72" x="2949" y="1330" fill="blue" data-id="68" onclick="alert('¡Hiciste clic en el rectángulo!')" /> <rect width="151" height="72" x="3107" y="1330" fill="blue" data-id="89" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                            <rect width="151" height="72" x="2949" y="1408" fill="blue" data-id="69" onclick="alert('¡Hiciste clic en el rectángulo!')" /> <rect width="151" height="72" x="3107" y="1408" fill="blue" data-id="90" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                            <rect width="151" height="72" x="2949" y="1487" fill="blue" data-id="70" onclick="alert('¡Hiciste clic en el rectángulo!')" /> <rect width="151" height="72" x="3107" y="1487" fill="blue" data-id="91" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                            <rect width="151" height="72" x="2949" y="1566" fill="blue" data-id="71" onclick="alert('¡Hiciste clic en el rectángulo!')" /> <rect width="151" height="72" x="3107" y="1566" fill="blue" data-id="92" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                            <rect width="151" height="72" x="2949" y="1645" fill="blue" data-id="72" onclick="alert('¡Hiciste clic en el rectángulo!')" /> <rect width="151" height="72" x="3107" y="1645" fill="blue" data-id="93" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                            <rect width="151" height="72" x="2949" y="1724" fill="blue" data-id="73" onclick="alert('¡Hiciste clic en el rectángulo!')" /> <rect width="151" height="72" x="3107" y="1724" fill="blue" data-id="94" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                            <rect width="151" height="72" x="2949" y="1802" fill="blue" data-id="74" onclick="alert('¡Hiciste clic en el rectángulo!')" /> <rect width="151" height="72" x="3107" y="1802" fill="blue" data-id="95" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                            <rect width="151" height="72" x="2949" y="1881" fill="blue" data-id="75" onclick="alert('¡Hiciste clic en el rectángulo!')" /> <rect width="151" height="72" x="3107" y="1881" fill="blue" data-id="96" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                        <rect width="151" height="72" x="2949" y="1959" fill="cyan" data-id="76" onclick="alert('¡Hiciste clic en el rectángulo!')" /> <rect width="151" height="72" x="3107" y="1959" fill="cyan" data-id="97" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                            <rect width="151" height="72" x="2949" y="2038" fill="cyan" data-id="77" onclick="alert('¡Hiciste clic en el rectángulo!')" /> <rect width="151" height="72" x="3107" y="2038" fill="cyan" data-id="98" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                            <rect width="151" height="72" x="2949" y="2117" fill="cyan" data-id="78" onclick="alert('¡Hiciste clic en el rectángulo!')" /> <rect width="151" height="72" x="3107" y="2117" fill="cyan" data-id="99" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+
+                    <rect width="150" height="74" x="3431" y="380" fill="lime" data-id="100" onclick="alert('¡Hiciste clic en el rectángulo!')" /> 
+                        <rect width="150" height="74" x="3431" y="460" fill="lime" data-id="101" onclick="alert('¡Hiciste clic en el rectángulo!')" /> 
+                        <rect width="150" height="74" x="3431" y="539" fill="blue" data-id="102" onclick="alert('¡Hiciste clic en el rectángulo!')" /> 
+                            <rect width="150" height="74" x="3431" y="617" fill="blue" data-id="103" onclick="alert('¡Hiciste clic en el rectángulo!')" /> 
+                            <rect width="150" height="74" x="3431" y="695" fill="blue" data-id="104" onclick="alert('¡Hiciste clic en el rectángulo!')" /> 
+                            <rect width="150" height="74" x="3431" y="773" fill="blue" data-id="105" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                            <rect width="150" height="74" x="3431" y="851" fill="blue" data-id="106" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                        <rect width="150" height="74" x="3431" y="931" fill="yellow" data-id="107" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                            <rect width="150" height="74" x="3431" y="1010" fill="yellow" data-id="108" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                            <rect width="150" height="74" x="3431" y="1089" fill="yellow" data-id="109" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                            <rect width="150" height="74" x="3431" y="1167" fill="yellow" data-id="110" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                            <rect width="150" height="74" x="3431" y="1245" fill="yellow" data-id="111" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                            <rect width="150" height="74" x="3431" y="1325" fill="yellow" data-id="112" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                            <rect width="150" height="74" x="3431" y="1404" fill="yellow" data-id="113" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                            <rect width="150" height="74" x="3431" y="1482" fill="yellow" data-id="114" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                            <rect width="150" height="74" x="3431" y="1561" fill="yellow" data-id="115" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                            <rect width="150" height="74" x="3431" y="1640" fill="yellow" data-id="116" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                            <rect width="150" height="74" x="3431" y="1719" fill="yellow" data-id="117" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                            <rect width="150" height="74" x="3431" y="1798" fill="yellow" data-id="118" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                            <rect width="150" height="74" x="3431" y="1876" fill="yellow" data-id="119" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                            <rect width="150" height="74" x="3431" y="1954" fill="yellow" data-id="120" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                            <rect width="150" height="74" x="3431" y="2034" fill="yellow" data-id="121" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                            <rect width="150" height="74" x="3431" y="2112" fill="yellow" data-id="122" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                            <rect width="150" height="74" x="3431" y="2190" fill="yellow" data-id="123" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+                            <rect width="150" height="50" x="3431" y="2268" fill="yellow" data-id="124" onclick="alert('¡Hiciste clic en el rectángulo!')" />
+
+                    <rect width="1870" height="94" x="0" y="2405" fill="green" data-id="125" onclick="alert('¡Hiciste clic en el rectángulo!')" /> 
+                        <rect width="950" height="94" x="1870" y="2405" fill="blue" data-id="126" onclick="alert('¡Hiciste clic en el rectángulo!')" /> 
+                        <rect width="475" height="114" x="2820" y="2385" fill="cyan" data-id="127" onclick="alert('¡Hiciste clic en el rectángulo!')" /> 
+                </svg>
+            </div>
         </div>
         <div class="legend">
             {% for tipos in types %}

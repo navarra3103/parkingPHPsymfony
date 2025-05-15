@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 final class ShowParkingController extends AbstractController
 {
@@ -57,5 +58,24 @@ final class ShowParkingController extends AbstractController
             'mapaVisitas' => $mapaVisitas,
             'types' => $tipos,
         ]);
+    }
+
+    #[Route('/api/plazas', name: 'api_plazas')]
+    public function apiPlazas(EntityManagerInterface $em): JsonResponse
+    {
+        $plazas = $em->getRepository(Plaza::class)->findAll();
+
+        $data = [];
+        foreach ($plazas as $plaza) {
+            $tipo = $plaza->getTipo();
+            $color = $tipo ? $tipo->getColor() : 'gray';
+
+            $data[] = [
+                'id' => $plaza->getIdPlaza(),
+                'color' => $color,
+            ];
+        }
+
+        return $this->json($data);
     }
 }
