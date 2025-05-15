@@ -5,13 +5,15 @@
 {% endblock %}
 {% block javascripts %}
     <script>
+        // Función para oscurecer un color HEX en un porcentaje dado
         function darkenColor(hex, percent = 20) {
-            let num = parseInt(hex.replace("#", ""), 16);
-            let amt = Math.round(2.55 * percent);
-            let R = (num >> 16) - amt;
-            let G = (num >> 8 & 0x00FF) - amt;
-            let B = (num & 0x0000FF) - amt;
-
+            let num = parseInt(hex.replace("#", ""), 16); // Convertir el color HEX a número
+            let amt = Math.round(2.55 * percent); // Cantidad de oscuridad
+            let R = (num >> 16) - amt; // Red
+            let G = (num >> 8 & 0x00FF) - amt; // Green
+            let B = (num & 0x0000FF) - amt; // Blue
+        
+            // Retornar nuevo color oscuro en HEX
             return "#" + (
                 0x1000000 +
                 (R < 0 ? 0 : R > 255 ? 255 : R) * 0x10000 +
@@ -19,74 +21,81 @@
                 (B < 0 ? 0 : B > 255 ? 255 : B)
             ).toString(16).slice(1);
         }
-
+        
         document.addEventListener('DOMContentLoaded', async () => {
-            const svg = document.querySelector('svg.image-overlay');
-            const rectangulos = svg.querySelectorAll('rect[data-id]');
-            const infoPanel = document.getElementById('info-panel');
-
-            let rectActivo = null;
-            let coloresOriginales = {};
-
+            const svg = document.querySelector('svg.image-overlay'); // Obtener el SVG
+            const rectangulos = svg.querySelectorAll('rect[data-id]'); // Obtener todos los rectángulos con atributo data-id
+            const infoPanel = document.getElementById('info-panel'); // Panel de información
+        
+            let rectActivo = null; // Referencia al rectángulo seleccionado
+            let coloresOriginales = {}; // Guardar los colores originales para restaurar luego
+        
             try {
+                // Petición a la API Symfony para obtener la información de plazas
                 const response = await fetch('/api/plazas');
                 if (!response.ok) throw new Error('No se pudo cargar la información');
-
-                const data = await response.json();
-
+        
+                const data = await response.json(); // Convertir respuesta a JSON
+        
+                // Mapeo de datos por ID de plaza para acceso rápido
                 const infoPorPlaza = {};
                 data.forEach(plaza => {
                     infoPorPlaza[plaza.id] = plaza;
                 });
-
+        
+                // Asignar color e interactividad a cada rectángulo
                 rectangulos.forEach(rect => {
                     const id = rect.getAttribute('data-id');
                     const plaza = infoPorPlaza[id];
-
+        
                     if (plaza) {
+                        // Aplicar color desde la base de datos o un color por defecto
                         const color = plaza.color || '#00ff00';
                         rect.setAttribute('fill', color);
-                        coloresOriginales[id] = color;
-
+                        coloresOriginales[id] = color; // Guardar color original
+        
+                        // Evento al hacer clic en una plaza
                         rect.addEventListener('click', (e) => {
-                            // Restaurar color del anterior
+                            // Restaurar color anterior si hay
                             if (rectActivo) {
                                 const prevId = rectActivo.getAttribute('data-id');
                                 rectActivo.setAttribute('fill', coloresOriginales[prevId]);
                             }
-
-                            // Oscurecer color actual
+        
+                            // Oscurecer el color actual
                             const colorOscuro = darkenColor(color);
                             rect.setAttribute('fill', colorOscuro);
-                            rectActivo = rect;
-
-                            // Mostrar información
+                            rectActivo = rect; // Guardar como seleccionado
+        
+                            // Mostrar información en el panel
                             document.getElementById('plaza-id').textContent = plaza.id;
                             document.getElementById('matricula').textContent = plaza.matricula || '—';
                             document.getElementById('estado').textContent = plaza.estado || '—';
                             document.getElementById('entrada').textContent = plaza.entrada || '—';
                             document.getElementById('salida').textContent = plaza.salida || '—';
-
+        
+                            // Posicionar el panel cerca del cursor
                             infoPanel.style.left = e.pageX + 'px';
                             infoPanel.style.top = e.pageY + 'px';
                             infoPanel.style.display = 'block';
-
-                            e.stopPropagation();
+        
+                            e.stopPropagation(); // Prevenir que el clic se propague y cierre el panel
                         });
                     }
                 });
-
+        
+                // Ocultar el panel y restaurar color al hacer clic fuera del SVG o panel
                 document.addEventListener('click', (e) => {
                     if (!e.target.closest('rect') && !e.target.closest('#info-panel')) {
                         infoPanel.style.display = 'none';
                         if (rectActivo) {
                             const id = rectActivo.getAttribute('data-id');
-                            rectActivo.setAttribute('fill', coloresOriginales[id]);
+                            rectActivo.setAttribute('fill', coloresOriginales[id]); // Restaurar color original
                             rectActivo = null;
                         }
                     }
                 });
-
+        
             } catch (err) {
                 console.error('Error cargando datos:', err);
             }
