@@ -12,7 +12,7 @@
             let R = (num >> 16) - amt; // Red
             let G = (num >> 8 & 0x00FF) - amt; // Green
             let B = (num & 0x0000FF) - amt; // Blue
-        
+
             // Retornar nuevo color oscuro en HEX
             return "#" + (
                 0x1000000 +
@@ -21,39 +21,39 @@
                 (B < 0 ? 0 : B > 255 ? 255 : B)
             ).toString(16).slice(1);
         }
-        
+
         document.addEventListener('DOMContentLoaded', async () => {
             const svg = document.querySelector('svg.image-overlay'); // Obtener el SVG
             const rectangulos = svg.querySelectorAll('rect[data-id]'); // Obtener todos los rectángulos con atributo data-id
             const infoPanel = document.getElementById('info-panel'); // Panel de información
-        
+
             let rectActivo = null; // Referencia al rectángulo seleccionado
             let coloresOriginales = {}; // Guardar los colores originales para restaurar luego
-        
+
             try {
                 // Petición a la API Symfony para obtener la información de plazas
                 const response = await fetch('/api/plazas');
                 if (!response.ok) throw new Error('No se pudo cargar la información');
-        
+
                 const data = await response.json(); // Convertir respuesta a JSON
-        
+
                 // Mapeo de datos por ID de plaza para acceso rápido
                 const infoPorPlaza = {};
                 data.forEach(plaza => {
                     infoPorPlaza[plaza.id] = plaza;
                 });
-        
+
                 // Asignar color e interactividad a cada rectángulo
                 rectangulos.forEach(rect => {
                     const id = rect.getAttribute('data-id');
                     const plaza = infoPorPlaza[id];
-        
+
                     if (plaza) {
                         // Aplicar color desde la base de datos o un color por defecto
                         const color = plaza.color || '#00ff00';
                         rect.setAttribute('fill', color);
                         coloresOriginales[id] = color; // Guardar color original
-        
+
                         // Evento al hacer clic en una plaza
                         rect.addEventListener('click', (e) => {
                             // Restaurar color anterior si hay
@@ -61,29 +61,29 @@
                                 const prevId = rectActivo.getAttribute('data-id');
                                 rectActivo.setAttribute('fill', coloresOriginales[prevId]);
                             }
-        
+
                             // Oscurecer el color actual
                             const colorOscuro = darkenColor(color);
                             rect.setAttribute('fill', colorOscuro);
                             rectActivo = rect; // Guardar como seleccionado
-        
+
                             // Mostrar información en el panel
                             document.getElementById('plaza-id').textContent = plaza.id;
                             document.getElementById('matricula').textContent = plaza.matricula || '—';
                             document.getElementById('estado').textContent = plaza.estado || '—';
                             document.getElementById('entrada').textContent = plaza.entrada || '—';
                             document.getElementById('salida').textContent = plaza.salida || '—';
-        
+
                             // Posicionar el panel cerca del cursor
                             infoPanel.style.left = e.pageX + 'px';
                             infoPanel.style.top = e.pageY + 'px';
                             infoPanel.style.display = 'block';
-        
+
                             e.stopPropagation(); // Prevenir que el clic se propague y cierre el panel
                         });
                     }
                 });
-        
+
                 // Ocultar el panel y restaurar color al hacer clic fuera del SVG o panel
                 document.addEventListener('click', (e) => {
                     if (!e.target.closest('rect') && !e.target.closest('#info-panel')) {
@@ -95,12 +95,60 @@
                         }
                     }
                 });
-        
+
             } catch (err) {
                 console.error('Error cargando datos:', err);
             }
         });
-    </script>
+
+
+        function mostrarFormulario(tipo) {
+            document.getElementById('form-crear').style.display = tipo === 'crear' ? 'block' : 'none';
+            document.getElementById('form-modificar').style.display = tipo === 'modificar' ? 'block' : 'none';
+        }
+        
+        // Ocultar formularios al hacer clic fuera
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('#form-crear') && !e.target.closest('#form-modificar') && !e.target.closest('button')) {
+                document.getElementById('form-crear').style.display = 'none';
+                document.getElementById('form-modificar').style.display = 'none';
+            }
+        });
+        
+        // Enviar datos a la base de datos usando fetch
+        function enviarFormulario(tipo) {
+            const url = tipo === 'crear' ? '/ShowParking/add-tipo' : '/ShowParking/update-tipo';
+            const data = new FormData();
+        
+            if (tipo === 'crear') {
+                data.append('nombre', document.getElementById('crear-nombre').value);
+                data.append('color', document.getElementById('crear-color').value);
+            } else {
+                data.append('id', document.getElementById('modificar-id').value);
+                data.append('nombre', document.getElementById('modificar-nombre').value);
+                data.append('color', document.getElementById('modificar-color').value);
+            }
+        
+            fetch(url, {
+                method: 'POST',
+                body: data
+            })
+            .then(res => res.json())
+            .then(json => {
+                if (json.success) {
+                    alert('¡Operación exitosa!');
+                    location.reload(); // Refrescar la vista para mostrar cambios
+                } else {
+                    alert('Error: ' + json.error);
+                }
+            })
+            .catch(err => {
+                alert('Error en la petición.');
+                console.error(err);
+            });
+        }
+</script>
+
 {% endblock %}
 
 {% block body %}
@@ -244,7 +292,34 @@
                     <div>{{ tipos.nombre }}</div>
                 </div>
             {% endfor %}
+            <button onclick="mostrarFormulario('crear')">➕ Añadir Tipo</button>
+            <button onclick="mostrarFormulario('modificar')">✏️ Modificar Tipo</button>
         </div>
+        <!-- Formulario crear tipo -->
+                <div id="form-crear" style="display:none;">
+                    <h3>Crear Tipo</h3>
+                    <h4>Nombre del nuevo tipo</h4>
+                    <input type="text" id="crear-nombre" placeholder="Nombre" /><br>
+                    <h4>Color del nuevo tipo</h4>
+                    <input type="color" id="crear-color" class="input-color" /><br>
+                    <button onclick="enviarFormulario('crear')">Crear</button>
+                </div>
+
+                <!-- Formulario modificar tipo -->
+                <div id="form-modificar" style="display:none;">
+                    <h3>Modificar Tipo</h3>
+                    <h4>Selecciona el tipo a modificar</h4>
+                    <select id="modificar-id">
+                        {% for tipo in types %}
+                            <option value="{{ tipo.idTipo }}">{{ tipo.nombre }}</option>
+                        {% endfor %}
+                    </select><br>
+                    <h4>Nuevo nombre</h4>
+                    <input type="text" id="modificar-nombre" placeholder="Nuevo Nombre" />
+                    <h4>Nuevo color (en #hexagizimal)</h4>
+                    <input type="color" id="modificar-color" class="input-color" /><br>
+                    <button onclick="enviarFormulario('modificar')">Modificar</button>
+                </div>
     </div>
     <footer></footer>
 

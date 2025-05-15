@@ -65,7 +65,7 @@ final class ShowParkingController extends AbstractController
     {
         $plazas = $em->getRepository(Plaza::class)->findAll();
         $visitas = $em->getRepository(Visita::class)->findAll();
-    
+
         $mapaVisitas = [];
         foreach ($visitas as $visita) {
             $plazaId = $visita->getPlaza()->getIdPlaza();
@@ -76,19 +76,19 @@ final class ShowParkingController extends AbstractController
                 'salida' => $visita->getSalida()?->format('Y-m-d H:i'),
             ];
         }
-    
+
         $result = [];
         foreach ($plazas as $plaza) {
             $tipoColor = $plaza->getTipo()?->getColor() ?? '#CCCCCC';
             $id = $plaza->getIdPlaza();
-        
+
             $info = $mapaVisitas[$id] ?? [
                 'matricula' => null,
                 'estado' => null,
                 'entrada' => null,
                 'salida' => null,
             ];
-        
+
             $result[] = [
                 'id' => $id,
                 'color' => $tipoColor,
@@ -98,8 +98,50 @@ final class ShowParkingController extends AbstractController
                 'salida' => $info['salida'],
             ];
         }
-    
+
         return $this->json($result);
     }
+    #[Route('/ShowParking/add-tipo', name: 'add_tipo', methods: ['POST'])]
+public function addTipo(Request $request, EntityManagerInterface $em): JsonResponse
+{
+    $nombre = $request->request->get('nombre');
+    $color = $request->request->get('color');
+
+    if (!$nombre || !$color) {
+        return $this->json(['error' => 'Faltan campos'], 400);
+    }
+
+    $tipo = new Tipo();
+    $tipo->setNombre($nombre);
+    $tipo->setColor($color);
+    $em->persist($tipo);
+    $em->flush();
+
+    return $this->json(['success' => true, 'tipo' => [
+        'id' => $tipo->getIdTipo(),
+        'nombre' => $tipo->getNombre(),
+        'color' => $tipo->getColor(),
+    ]]);
+}
+
+#[Route('/ShowParking/update-tipo', name: 'update_tipo', methods: ['POST'])]
+public function updateTipo(Request $request, EntityManagerInterface $em): JsonResponse
+{
+    $id = $request->request->get('id');
+    $nombre = $request->request->get('nombre');
+    $color = $request->request->get('color');
+
+    $tipo = $em->getRepository(Tipo::class)->find($id);
+    if (!$tipo) {
+        return $this->json(['error' => 'Tipo no encontrado'], 404);
+    }
+
+    if ($nombre) $tipo->setNombre($nombre);
+    if ($color) $tipo->setColor($color);
+
+    $em->flush();
+
+    return $this->json(['success' => true]);
+}
 
 }
