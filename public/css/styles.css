@@ -60,6 +60,16 @@
                     opacity: 1;
                     z-index: 2;
                 }
+                & > .info-panel-parking {
+                    position: absolute;
+                    display: none;
+                    background: white;
+                    border: 1px solid #ccc;
+                    padding: 1rem;
+                    border-radius: 8px;
+                    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+                    z-index: 1000;
+                }
             }
             
         }

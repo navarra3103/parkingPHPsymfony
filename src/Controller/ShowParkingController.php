@@ -61,21 +61,45 @@ final class ShowParkingController extends AbstractController
     }
 
     #[Route('/api/plazas', name: 'api_plazas')]
-    public function apiPlazas(EntityManagerInterface $em): JsonResponse
+    public function getPlazas(EntityManagerInterface $em): JsonResponse
     {
         $plazas = $em->getRepository(Plaza::class)->findAll();
-
-        $data = [];
-        foreach ($plazas as $plaza) {
-            $tipo = $plaza->getTipo();
-            $color = $tipo ? $tipo->getColor() : 'gray';
-
-            $data[] = [
-                'id' => $plaza->getIdPlaza(),
-                'color' => $color,
+        $visitas = $em->getRepository(Visita::class)->findAll();
+    
+        $mapaVisitas = [];
+        foreach ($visitas as $visita) {
+            $plazaId = $visita->getPlaza()->getIdPlaza();
+            $mapaVisitas[$plazaId] = [
+                'matricula' => $visita->getCoche()->getMatricula(),
+                'estado' => $visita->getEstado()->getNombre(),
+                'entrada' => $visita->getEntrada()?->format('Y-m-d H:i'),
+                'salida' => $visita->getSalida()?->format('Y-m-d H:i'),
             ];
         }
-
-        return $this->json($data);
+    
+        $result = [];
+        foreach ($plazas as $plaza) {
+            $tipoColor = $plaza->getTipo()?->getColor() ?? '#CCCCCC';
+            $id = $plaza->getIdPlaza();
+        
+            $info = $mapaVisitas[$id] ?? [
+                'matricula' => null,
+                'estado' => null,
+                'entrada' => null,
+                'salida' => null,
+            ];
+        
+            $result[] = [
+                'id' => $id,
+                'color' => $tipoColor,
+                'matricula' => $info['matricula'],
+                'estado' => $info['estado'],
+                'entrada' => $info['entrada'],
+                'salida' => $info['salida'],
+            ];
+        }
+    
+        return $this->json($result);
     }
+
 }
