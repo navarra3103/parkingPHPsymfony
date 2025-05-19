@@ -6,6 +6,7 @@ use App\Entity\Plaza;
 use App\Entity\Estado;
 use App\Entity\Visita;
 use App\Entity\Tipo;
+use App\Entity\Coche;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -49,13 +50,16 @@ final class ShowParkingController extends AbstractController
             }
         }
 
-        // Obtener tipos (si los usas en la vista)
+        // Obtener tipos y estados
         $tipos = $em->getRepository(Tipo::class)->findAll();
+        $estados = $em->getRepository(Estado::class)->findAll();
+
 
         return $this->render('show_parking/index.html.twig', [
             'parkings' => $plazas,
             'mapaVisitas' => $mapaVisitas,
             'types' => $tipos,
+            'estados' => $estados,
         ]);
     }
 
@@ -97,6 +101,9 @@ final class ShowParkingController extends AbstractController
 
         return $this->json($result);
     }
+
+
+
     #[Route('/ShowParking/add-tipo', name: 'add_tipo', methods: ['POST'])]
     public function addTipo(Request $request, EntityManagerInterface $em): JsonResponse
     {
@@ -126,18 +133,65 @@ final class ShowParkingController extends AbstractController
         $id = $request->request->get('id');
         $nombre = $request->request->get('nombre');
         $color = $request->request->get('color');
-
         $tipo = $em->getRepository(Tipo::class)->find($id);
         if (!$tipo) {
             return $this->json(['error' => 'Tipo no encontrado'], 404);
         }
-
         if ($nombre) $tipo->setNombre($nombre);
         if ($color) $tipo->setColor($color);
-
         $em->flush();
-
         return $this->json(['success' => true]);
+    }
+
+    #[Route('/ShowParking/modifyVisit', name: 'modify_visit', methods: ['POST'])]
+    public function modifyVisit(Request $request, EntityManagerInterface $em): Response
+    {
+        $plazaId = $request->request->get('plaza');
+        $matricula = $request->request->get('matricula');
+        $estadoId = $request->request->get('estado');
+    
+        $plaza = $em->getRepository(Plaza::class)->find($plazaId);
+        $estado = $em->getRepository(Estado::class)->find($estadoId);
+        $coche = $em->getRepository(Coche::class)->find($matricula);
+    
+        if (!$plaza || !$estado || !$coche) {
+            $this->addFlash('error', 'Plaza, Estado o Coche no válido');
+            return $this->redirectToRoute('app_show_parking');
+        }
+    
+        // Buscar o crear la visita
+        $visita = $em->getRepository(Visita::class)->findOneBy(['plaza' => $plaza]);
+        if (!$visita) {
+            $visita = new Visita();
+            $visita->setPlaza($plaza);
+            $visita->setEntrada(new \DateTime()); // se establece la entrada al crear
+        }
+    
+        // Asignar estado y coche (ya existente)
+        $visita->setEstado($estado);
+        $visita->setCoche($coche);
+    
+        $em->persist($visita);
+        $em->flush();
+    
+        $this->addFlash('success', 'Visita modificada correctamente.');
+        return $this->redirectToRoute('app_show_parking');
+    }
+
+    #[Route('/ShowParking/deleteVisit', name: 'delete_visit', methods: ['POST'])]
+    public function deleteVisit(Request $request, EntityManagerInterface $em): Response
+    {
+        $plazaId = $request->request->get('plaza');
+        $visita = $em->getRepository(Visita::class)->findOneBy(['plaza' => $plazaId]);
+
+        if ($visita) {
+            $em->remove($visita);
+            $em->flush();
+
+            return new Response('Visita eliminada', 200);
+        }
+
+        return new Response('No se encontró visita', 404);
     }
 
 }

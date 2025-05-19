@@ -71,20 +71,68 @@
                     box-shadow: 0 0 10px rgba(0,0,0,0.2);
                     z-index: 1000;
 
-                    & > #editar-plaza {
+                    & > form {
                         width: 100%;
-                        align-items: center;
-                        text-align: center;
-                        margin-top: 3%;
+                        height: auto;
+                        margin: 0;
+                        padding: 0;
+
+                        & > label {
+                            margin-left: 10px;
+                            font-weight: bold;
+                            display: block;
+                            margin-bottom: 0.25em;
+                        }
+
+                        & > input {
+                            width: 85%;
+                            margin-left: 10%;
+                            padding: 2px;
+                        }
+                        & > select {
+                            width: 85%;
+                            margin-left: 10%;
+                            padding: 2px;
+                        }
+
+                        & > button[type="submit"] {
+                            margin-top: 0.5em;
+                            width: 45%;
+                            height: auto;
+                            background-color: #333;
+                            color: white;
+                            border: none;
+                            border-radius: 5px;
+                            cursor: pointer;
+                            margin-right: 5%;
+                            padding: 5px;
+                            margin-bottom: 0%;
+
+                            &:hover {
+                                background-color: #555;
+                            }
+                        }
+
+                        & > button[type="button"] {
+                            margin-top: 0.5em;
+                            width: 45%;
+                            height: auto;
+                            background-color: #333;
+                            color: white;
+                            border: none;
+                            border-radius: 5px;
+                            cursor: pointer;
+                            padding: 5px;
+                            margin-bottom: 0%;
+
+                            &:hover {
+                                background-color: #555;
+                            }
+                        }
+                        
                     }
 
-                    & > #editar-plaza > a{
-                        text-decoration: none;
-                        color: black;
-                        border: 1px solid black;
-                        padding-left: 10%;
-                        padding-right: 10%;
-                    } 
+                    
                 }
             }
             

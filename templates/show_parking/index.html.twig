@@ -134,11 +134,22 @@
                         <rect width="475" height="114" x="2820" y="2385" fill="cyan" data-id="127"  /> 
                 </svg>
                 <div id="info-panel" class="info-panel-parking" >
-                    <strong>Plaza: <span id="plaza-id"></span></strong><br>
-                    Matrícula: <span id="matricula"></span><br>
-                    Estado: <span id="estado"></span><br>
-                    Entrada: <span id="entrada"></span><br>
-                    <div id="editar-plaza"></div>
+                    <form action="/ShowParking/modifyVisit" method="post">
+                        <label for="plaza-id">Plaza :</label>
+                        <input type="text" id="plaza-id" name="plaza" readonly><br>
+                        <label for="matricula-id">Matrícula:</label>
+                        <input type="text" id="matricula" name="matricula"><br>
+                        <label for="estado">Estado:</label>
+                        <select id="estado" name="estado">
+                            {% for estado in estados %}
+                                <option value="{{ estado.IdEstado }}">{{ estado.Nombre }}</option>
+                            {% endfor %}
+                        </select><br>
+                        <label for="entrada">Entrada:</label>
+                        <input type="text" id="entrada" name="entrada" readonly><br>
+                        <button type="submit">Entrar</button>
+                        <button type="button" id="delete-button">Salir</button>
+                    </form>
                 </div>
             </div>
         </div>

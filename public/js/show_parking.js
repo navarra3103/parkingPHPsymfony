@@ -54,12 +54,43 @@ document.addEventListener('DOMContentLoaded', async () => {
                     rect.setAttribute('fill', colorOscuro);
                     rectActivo = rect;
 
-                    document.getElementById('plaza-id').textContent = plaza.id;
-                    document.getElementById('matricula').textContent = plaza.matricula || '—';
-                    document.getElementById('estado').textContent = plaza.estado || '—';
-                    document.getElementById('entrada').textContent = plaza.entrada || '—';
-                    const editarCell = document.getElementById('editar-plaza');
-                    editarCell.innerHTML = `<a href="/ModifyParking/${plaza.id}" class="boton-modificar">✏️ Editar</a>`;
+                    document.getElementById('plaza-id').value = plaza.id;
+                    document.getElementById('matricula').value = plaza.matricula || '—';
+                    // Obtener el select de tipo y establecer el valor correspondiente
+                    const estadoSelect = document.getElementById('estado');
+                    const estadoNombre = plaza.estado || '';
+
+                    for (let option of estadoSelect.options) {
+                        if (option.text === estadoNombre) {
+                            estadoSelect.value = option.value;
+                            break;
+                        }
+                    }
+                    document.getElementById('entrada').value = plaza.entrada || '—';
+
+                    // elimanr vista 
+                    document.getElementById('delete-button').addEventListener('click', () => {
+                        const plazaId = document.getElementById('plaza-id').value;
+                        
+                        if (confirm('¿Estás seguro de que quieres eliminar esta visita?')) {
+                            fetch('/ShowParking/deleteVisit', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/x-www-form-urlencoded',
+                                    'X-Requested-With': 'XMLHttpRequest'
+                                },
+                                body: `plaza=${encodeURIComponent(plazaId)}`
+                            })
+                            .then(response => {
+                                if (response.ok) {
+                                    alert('Visita eliminada');
+                                    location.reload(); // Recarga la página para ver cambios
+                                } else {
+                                    alert('Error al eliminar la visita');
+                                }
+                            });
+                        }
+                 });
 
 
                     // Mostrar temporalmente el infoPanel oculto para medir tamaño
