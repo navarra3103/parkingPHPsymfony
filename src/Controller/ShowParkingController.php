@@ -45,7 +45,6 @@ final class ShowParkingController extends AbstractController
                     'matricula' => $coche->getMatricula(),
                     'estado' => $estado->getNombre(),
                     'entrada' => $visita->getEntrada(),
-                    'salida' => $visita->getSalida(),
                 ];
             }
         }
@@ -73,7 +72,6 @@ final class ShowParkingController extends AbstractController
                 'matricula' => $visita->getCoche()->getMatricula(),
                 'estado' => $visita->getEstado()->getNombre(),
                 'entrada' => $visita->getEntrada()?->format('Y-m-d H:i'),
-                'salida' => $visita->getSalida()?->format('Y-m-d H:i'),
             ];
         }
 
@@ -86,7 +84,6 @@ final class ShowParkingController extends AbstractController
                 'matricula' => null,
                 'estado' => null,
                 'entrada' => null,
-                'salida' => null,
             ];
 
             $result[] = [
@@ -95,53 +92,52 @@ final class ShowParkingController extends AbstractController
                 'matricula' => $info['matricula'],
                 'estado' => $info['estado'],
                 'entrada' => $info['entrada'],
-                'salida' => $info['salida'],
             ];
         }
 
         return $this->json($result);
     }
     #[Route('/ShowParking/add-tipo', name: 'add_tipo', methods: ['POST'])]
-public function addTipo(Request $request, EntityManagerInterface $em): JsonResponse
-{
-    $nombre = $request->request->get('nombre');
-    $color = $request->request->get('color');
+    public function addTipo(Request $request, EntityManagerInterface $em): JsonResponse
+    {
+        $nombre = $request->request->get('nombre');
+        $color = $request->request->get('color');
 
-    if (!$nombre || !$color) {
-        return $this->json(['error' => 'Faltan campos'], 400);
+        if (!$nombre || !$color) {
+            return $this->json(['error' => 'Faltan campos'], 400);
+        }
+
+        $tipo = new Tipo();
+        $tipo->setNombre($nombre);
+        $tipo->setColor($color);
+        $em->persist($tipo);
+        $em->flush();
+
+        return $this->json(['success' => true, 'tipo' => [
+            'id' => $tipo->getIdTipo(),
+            'nombre' => $tipo->getNombre(),
+            'color' => $tipo->getColor(),
+        ]]);
     }
 
-    $tipo = new Tipo();
-    $tipo->setNombre($nombre);
-    $tipo->setColor($color);
-    $em->persist($tipo);
-    $em->flush();
+    #[Route('/ShowParking/update-tipo', name: 'update_tipo', methods: ['POST'])]
+    public function updateTipo(Request $request, EntityManagerInterface $em): JsonResponse
+    {
+        $id = $request->request->get('id');
+        $nombre = $request->request->get('nombre');
+        $color = $request->request->get('color');
 
-    return $this->json(['success' => true, 'tipo' => [
-        'id' => $tipo->getIdTipo(),
-        'nombre' => $tipo->getNombre(),
-        'color' => $tipo->getColor(),
-    ]]);
-}
+        $tipo = $em->getRepository(Tipo::class)->find($id);
+        if (!$tipo) {
+            return $this->json(['error' => 'Tipo no encontrado'], 404);
+        }
 
-#[Route('/ShowParking/update-tipo', name: 'update_tipo', methods: ['POST'])]
-public function updateTipo(Request $request, EntityManagerInterface $em): JsonResponse
-{
-    $id = $request->request->get('id');
-    $nombre = $request->request->get('nombre');
-    $color = $request->request->get('color');
+        if ($nombre) $tipo->setNombre($nombre);
+        if ($color) $tipo->setColor($color);
 
-    $tipo = $em->getRepository(Tipo::class)->find($id);
-    if (!$tipo) {
-        return $this->json(['error' => 'Tipo no encontrado'], 404);
+        $em->flush();
+
+        return $this->json(['success' => true]);
     }
-
-    if ($nombre) $tipo->setNombre($nombre);
-    if ($color) $tipo->setColor($color);
-
-    $em->flush();
-
-    return $this->json(['success' => true]);
-}
 
 }

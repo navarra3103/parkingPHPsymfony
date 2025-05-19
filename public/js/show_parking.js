@@ -58,7 +58,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                     document.getElementById('matricula').textContent = plaza.matricula || '—';
                     document.getElementById('estado').textContent = plaza.estado || '—';
                     document.getElementById('entrada').textContent = plaza.entrada || '—';
-                    document.getElementById('salida').textContent = plaza.salida || '—';
+                    const editarCell = document.getElementById('editar-plaza');
+                    editarCell.innerHTML = `<a href="/ModifyParking/${plaza.id}" class="boton-modificar">✏️ Editar</a>`;
+
 
                     // Mostrar temporalmente el infoPanel oculto para medir tamaño
                     infoPanel.style.visibility = 'hidden';
