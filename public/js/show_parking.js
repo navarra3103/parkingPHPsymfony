@@ -88,6 +88,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                             result.focus();
                         });
 
+                        // Filtrar resultados al escribir
 
 
 
