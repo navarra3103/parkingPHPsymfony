@@ -149,16 +149,21 @@ final class ShowParkingController extends AbstractController
         $plazaId = $request->request->get('plaza');
         $matricula = $request->request->get('matricula');
         $estadoId = $request->request->get('estado');
-    
+
+         // Validar que se haya seleccionado un estado
+        if (empty($estadoId)) {
+            return $this->redirectToRoute('app_show_parking');
+        }
+
         $plaza = $em->getRepository(Plaza::class)->find($plazaId);
         $estado = $em->getRepository(Estado::class)->find($estadoId);
         $coche = $em->getRepository(Coche::class)->find($matricula);
-    
+
         if (!$plaza || !$estado || !$coche) {
             $this->addFlash('error', 'Plaza, Estado o Coche no válido');
             return $this->redirectToRoute('app_show_parking');
         }
-    
+
         // Buscar o crear la visita
         $visita = $em->getRepository(Visita::class)->findOneBy(['plaza' => $plaza]);
         if (!$visita) {
@@ -166,14 +171,14 @@ final class ShowParkingController extends AbstractController
             $visita->setPlaza($plaza);
             $visita->setEntrada(new \DateTime()); // se establece la entrada al crear
         }
-    
+
         // Asignar estado y coche (ya existente)
         $visita->setEstado($estado);
         $visita->setCoche($coche);
-    
+
         $em->persist($visita);
         $em->flush();
-    
+
         $this->addFlash('success', 'Visita modificada correctamente.');
         return $this->redirectToRoute('app_show_parking');
     }

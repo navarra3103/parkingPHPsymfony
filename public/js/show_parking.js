@@ -55,18 +55,32 @@ document.addEventListener('DOMContentLoaded', async () => {
                     rectActivo = rect;
 
                     document.getElementById('plaza-id').value = plaza.id;
-                    document.getElementById('matricula').value = plaza.matricula || '—';
+                    document.getElementById('matricula').value = plaza.matricula || '';
                     // Obtener el select de tipo y establecer el valor correspondiente
                     const estadoSelect = document.getElementById('estado');
                     const estadoNombre = plaza.estado || '';
-
+                    var found = false;
+                    // Limpiar el valor del select
                     for (let option of estadoSelect.options) {
                         if (option.text === estadoNombre) {
                             estadoSelect.value = option.value;
+                            found = true;
                             break;
                         }
                     }
-                    document.getElementById('entrada').value = plaza.entrada || '—';
+                    if (!found) {
+                        estadoSelect.value = ''; 
+                    }
+                    document.getElementById('entrada').value = plaza.entrada || '';
+                    
+                    // comprobar si existe el el select no es null
+                    document.getElementById('visita-form').addEventListener('submit', function (e) {
+                        const estado = document.getElementById('estado').value;
+                        if (!estado) {
+                            alert('Debes seleccionar un estado válido');
+                            e.preventDefault();
+                        }
+                    });
 
                     // elimanr vista 
                     document.getElementById('delete-button').addEventListener('click', () => {
