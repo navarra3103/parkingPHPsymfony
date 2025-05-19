@@ -140,8 +140,10 @@
                         <label for="matricula-id">Matrícula:</label>
                         <input type="text" id="matricula" name="matricula"><br>
                             <div id="result" tabindex="0" class="div-result">
+                                {% set NumMactricula = 0 %}
                                 {% for coche in matriculas %}
-                                    <p>{{ coche.matricula }}</p>
+                                    {% set NumMactricula = NumMactricula + 1 %}
+                                    <p num="{{NumMactricula}}">{{ coche.matricula }}</p>
                                 {% endfor %}
                             </div>
                         <label for="estado">Estado:</label>
