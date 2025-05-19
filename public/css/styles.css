@@ -94,6 +94,21 @@
                             background-color: #f0f0f0; 
                             color: #777; 
                         }
+                        & > .div-result {
+                            width: 87%;
+                            margin-left: 10%;
+                            border: 1px solid #000000;
+
+                            & > p {
+                                margin: 0;
+                                padding: 5px;
+
+                                &:hover {
+                                    background-color: #f0f0f0;
+                                }
+                            }
+
+                        }
 
                         & > select {
                             width: 87%;

@@ -139,7 +139,11 @@
                         <input type="text" id="plaza-id" name="plaza" readonly><br>
                         <label for="matricula-id">Matrícula:</label>
                         <input type="text" id="matricula" name="matricula"><br>
-                        <div id="result" tabindex="0" class="div-result">wsdw </div>
+                            <div id="result" tabindex="0" class="div-result">
+                                {% for coche in matriculas %}
+                                    <p>{{ coche.matricula }}</p>
+                                {% endfor %}
+                            </div>
                         <label for="estado">Estado:</label>
                         <select id="estado" name="estado">
                             <option value="">Selecciona un estado</option>

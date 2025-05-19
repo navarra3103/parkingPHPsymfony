@@ -50,9 +50,10 @@ final class ShowParkingController extends AbstractController
             }
         }
 
-        // Obtener tipos y estados
+        // Obtener tipos , estados y matriculas
         $tipos = $em->getRepository(Tipo::class)->findAll();
         $estados = $em->getRepository(Estado::class)->findAll();
+        $matriculas = $em->getRepository(Coche::class)->findAll();
 
 
         return $this->render('show_parking/index.html.twig', [
@@ -60,6 +61,7 @@ final class ShowParkingController extends AbstractController
             'mapaVisitas' => $mapaVisitas,
             'types' => $tipos,
             'estados' => $estados,
+            'matriculas' => $matriculas,
         ]);
     }
 
