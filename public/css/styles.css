@@ -103,8 +103,7 @@
             left: 10%;
             width: 40%;
             max-width: 450px;
-            height: 40%;
-            max-height: 500px;
+            height: auto;
             margin: 10%;
             background-color: rgb(192, 192, 192);
             position: absolute;
