@@ -156,3 +156,8 @@ export function enviarFormulario(tipo) {
             console.error(err);
         });
 }
+
+// Hacer las funciones accesibles globalmente
+window.mostrarFormulario = mostrarFormulario;
+window.enviarFormulario = enviarFormulario;
+
