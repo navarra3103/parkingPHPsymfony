@@ -55,7 +55,45 @@ document.addEventListener('DOMContentLoaded', async () => {
                     rectActivo = rect;
 
                     document.getElementById('plaza-id').value = plaza.id;
-                    document.getElementById('matricula').value = plaza.matricula || '';
+
+                    // Mostart valor de la matricula de la base de datos
+                    const matriculaInput = document.getElementById('matricula');
+                    matriculaInput.value = plaza.matricula || '';
+                    const result = document.querySelector('.div-result');
+                    result.style.display = 'none';
+                    // Tener un buscador desde el input de matricula
+                        // Ocultar resultados si el foco se va fuera del input y del div
+                        matriculaInput.addEventListener('focus', () => {
+                            result.style.display = 'block';
+                        });
+
+                        // Usar setTimeout para permitir cambiar el foco antes de ocultar
+                        function hideIfFocusOutside() {
+                            setTimeout(() => {
+                                const active = document.activeElement;
+                                const isInInput = active === matriculaInput;
+                                const isInResult = result.contains(active);
+                                if (!isInInput && !isInResult) {
+                                    result.style.display = 'none';
+                                }
+                            }, 100);
+                        }
+
+                        // Eventos de blur
+                        matriculaInput.addEventListener('blur', hideIfFocusOutside);
+                        result.addEventListener('blur', hideIfFocusOutside);
+
+                        // Si haces clic en el div, darle foco
+                        result.addEventListener('mousedown', () => {
+                            result.focus();
+                        });
+
+
+
+
+
+
+
                     // Obtener el select de tipo y establecer el valor correspondiente
                     const estadoSelect = document.getElementById('estado');
                     const estadoNombre = plaza.estado || '';
