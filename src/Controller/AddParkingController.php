@@ -28,6 +28,28 @@ final class AddParkingController extends AbstractController
         $formCoche->handleRequest($request);
 
         if ($formCoche->isSubmitted() && $formCoche->isValid()) {
+
+            $coches = $entityManager->getRepository(Coche::class)->findAll();
+
+            foreach ($coches as $c) {
+
+                $matricula = $c->getMatricula();
+
+                if ($c->getMatricula() == $coche->getMatricula()) {
+                    
+                    if ($c->getEstado() != $coche->getEstado()) {
+                        $c->setEstado($coche->getEstado());
+                    }
+
+                    if ($c->getTipo() != $coche->getTipo()) {
+                        $c->setTipo($coche->getTipo());
+                    }
+
+                    $this->addFlash('existe', 'Se han modificado los datos del coche.');
+                    return $this->redirectToRoute('app_add_parking');
+                }
+            }
+
             $entityManager->persist($coche);
             $entityManager->flush();
 
