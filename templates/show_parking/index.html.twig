@@ -156,7 +156,9 @@
         </div>
         <div class="legend" >
             <!-- botones de añadir coche -->
-            <button id="add-car" class="add-car-button">🚘 Gestionar coche</button>
+            <a href="{{ path('app_add_parking') }}">
+                <button id="add-car" class="add-car-button">🚘 Gestionar coche</button>
+            </a>
             <!-- Leyenda -->
             <div class="div-data-leyenda">
                 {% for tipos in types %}
