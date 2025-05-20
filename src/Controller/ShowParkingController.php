@@ -106,44 +106,69 @@ final class ShowParkingController extends AbstractController
 
 
 
-    #[Route('/ShowParking/add-tipo', name: 'add_tipo', methods: ['POST'])]
-    public function addTipo(Request $request, EntityManagerInterface $em): JsonResponse
-    {
-        $nombre = $request->request->get('nombre');
-        $color = $request->request->get('color');
-
-        if (!$nombre || !$color) {
-            return $this->json(['error' => 'Faltan campos'], 400);
+       // Crear Tipo
+        #[Route('/ShowParking/add-tipo', name: 'add_tipo', methods: ['POST'])]
+        public function addTipo(Request $request, EntityManagerInterface $em): JsonResponse
+        {
+            $data = json_decode($request->getContent(), true);
+            $nombre = $data['nombre'] ?? null;
+            $color = $data['color'] ?? null;
+        
+            if (!$nombre || !$color) {
+                return $this->json(['error' => 'Faltan campos'], 400);
+            }
+        
+            $tipo = new Tipo();
+            $tipo->setNombre($nombre);
+            $tipo->setColor($color);
+            $em->persist($tipo);
+            $em->flush();
+        
+            return $this->json(['success' => true, 'tipo' => [
+                'id' => $tipo->getIdTipo(),
+                'nombre' => $tipo->getNombre(),
+                'color' => $tipo->getColor(),
+            ]]);
         }
 
-        $tipo = new Tipo();
-        $tipo->setNombre($nombre);
-        $tipo->setColor($color);
-        $em->persist($tipo);
-        $em->flush();
-
-        return $this->json(['success' => true, 'tipo' => [
-            'id' => $tipo->getIdTipo(),
-            'nombre' => $tipo->getNombre(),
-            'color' => $tipo->getColor(),
-        ]]);
-    }
-
-    #[Route('/ShowParking/update-tipo', name: 'update_tipo', methods: ['POST'])]
-    public function updateTipo(Request $request, EntityManagerInterface $em): JsonResponse
-    {
-        $id = $request->request->get('id');
-        $nombre = $request->request->get('nombre');
-        $color = $request->request->get('color');
-        $tipo = $em->getRepository(Tipo::class)->find($id);
-        if (!$tipo) {
-            return $this->json(['error' => 'Tipo no encontrado'], 404);
+    // Modificar Tipo
+        #[Route('/ShowParking/update-tipo', name: 'update_tipo', methods: ['POST'])]
+        public function updateTipo(Request $request, EntityManagerInterface $em): JsonResponse
+        {
+            $data = json_decode($request->getContent(), true);
+            $id = $data['id'] ?? null;
+            $nombre = $data['nombre'] ?? null;
+            $color = $data['color'] ?? null;
+        
+            $tipo = $em->getRepository(Tipo::class)->find($id);
+            if (!$tipo) {
+                return $this->json(['error' => 'Tipo no encontrado'], 404);
+            }
+        
+            if ($nombre !== null) $tipo->setNombre($nombre);
+            if ($color !== null) $tipo->setColor($color);
+            $em->flush();
+        
+            return $this->json(['success' => true]);
         }
-        if ($nombre) $tipo->setNombre($nombre);
-        if ($color) $tipo->setColor($color);
-        $em->flush();
-        return $this->json(['success' => true]);
-    }
+
+    // Eliminar Tipo
+        #[Route('/ShowParking/delete-tipo', name: 'delete_tipo', methods: ['POST'])]
+        public function eliminarTipo(Request $request, EntityManagerInterface $em): JsonResponse
+        {
+            $data = json_decode($request->getContent(), true);
+            $id = $data['id'] ?? null;
+        
+            $tipo = $em->getRepository(Tipo::class)->find($id);
+            if (!$tipo) {
+                return $this->json(['error' => 'Tipo no encontrado'], 404);
+            }
+        
+            $em->remove($tipo);
+            $em->flush();
+        
+            return $this->json(['success' => true]);
+        }
 
     #[Route('/ShowParking/modifyVisit', name: 'modify_visit', methods: ['POST'])]
     public function modifyVisit(Request $request, EntityManagerInterface $em): Response

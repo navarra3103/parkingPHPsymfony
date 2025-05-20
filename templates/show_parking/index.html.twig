@@ -170,34 +170,41 @@
             </div>
             <button onclick="mostrarFormulario('crear')">➕ Añadir Tipo</button>
             <button onclick="mostrarFormulario('modificar')">✏️ Modificar Tipo</button>
+            <button onclick="mostrarFormulario('eliminar')">🗑️ Eliminar Tipo</button>
         </div>
         <!-- Formulario crear tipo -->
-                <div id="form-crear" style="display:none;">
-                    <h3>Crear Tipo</h3>
-                    <h4>Nombre del nuevo tipo</h4>
-                    <input type="text" id="crear-nombre" placeholder="Nombre" /><br>
-                    <h4>Color del nuevo tipo</h4>
-                    <input type="color" id="crear-color" class="input-color" /><br>
-                    <button onclick="enviarFormulario('crear')">Crear</button>
-                </div>
-
-                <!-- Formulario modificar tipo -->
-                <div id="form-modificar" style="display:none;">
-                    <h3>Modificar Tipo</h3>
-                    <h4>Selecciona el tipo a modificar</h4>
-                    <select id="modificar-id">
-                        {% for tipo in types %}
-                            <option value="{{ tipo.idTipo }}">{{ tipo.nombre }}</option>
-                        {% endfor %}
-                    </select><br>
-                    <h4>Nuevo nombre</h4>
-                    <input type="text" id="modificar-nombre" placeholder="Nuevo Nombre" />
-                    <h4>Nuevo color (en #hexagizimal)</h4>
-                    <input type="color" id="modificar-color" class="input-color" /><br>
-                    <button onclick="enviarFormulario('modificar')">Modificar</button>
-                </div>
+        <div id="form-crear" style="display:none;">
+            <h3>Crear Tipo</h3>
+            <h4>Nombre del nuevo tipo</h4>
+            <input type="text" id="crear-nombre" placeholder="Nombre" /><br>
+            <h4>Color del nuevo tipo</h4>
+            <input type="color" id="crear-color" class="input-color" /><br>
+            <button onclick="enviarFormulario('add-tipo')">Crear</button>
+        </div>
+        <!-- Formulario modificar tipo -->
+        <div id="form-modificar" style="display:none;">
+            <h3>Modificar Tipo</h3>
+            <h4>Selecciona el tipo a modificar</h4>
+            <select id="modificar-id">
+                {% for tipo in types %}
+                    <option value="{{ tipo.idTipo }}">{{ tipo.nombre }}</option>
+                {% endfor %}
+            </select><br>
+            <h4>Nuevo nombre</h4>
+            <input type="text" id="modificar-nombre" placeholder="Nuevo Nombre" />
+            <h4>Nuevo color (en #hexagizimal)</h4>
+            <input type="color" id="modificar-color" class="input-color" /><br>
+            <button onclick="enviarFormulario('update-tipo')">Modificar</button>
+        </div>
+        <!-- Formulario eliminar tipo -->
+        <div id="form-eliminar" style="display:none;">
+            <h3>Eliminar Tipo</h3>
+            <select id="eliminar-id">
+                {% for tipo in types %}
+                    <option value="{{ tipo.idTipo }}">{{ tipo.nombre }}</option>
+                {% endfor %}
+            </select>
+            <button onclick="enviarFormulario('delete-tipo')">Eliminar</button>
+        </div>
     </div>
-    <footer></footer>
-
-
 {% endblock %}
