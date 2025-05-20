@@ -191,35 +191,32 @@ document.addEventListener('DOMContentLoaded', async () => {
                     // Obtener la fecha de entrada si existe si no existe poner " "
                         const entradaInput = document.getElementById('entrada');
                             entradaInput.value = plaza.entrada || '';
-                    // Guardar visita / actualizar
-                        document.getElementById('visita-form').addEventListener('submit', function (e) {
-                            const estado = document.getElementById('estado').value;
-                            if (!estado) {
-                                alert('Debes seleccionar un estado válido');
-                                e.preventDefault();
-                            }
-                        });
                     // Eliminar visita / salir
                        document.getElementById('delete-button').addEventListener('click', () => {
                             const plazaId = document.getElementById('plaza-id').value;
+                            var Verify = true
 
-                            if (confirm('¿Estás seguro de que quieres eliminar esta visita?')) {
-                                fetch('/ShowParking/deleteVisit', {
-                                    method: 'POST',
-                                    headers: {
-                                        'Content-Type': 'application/x-www-form-urlencoded',
-                                        'X-Requested-With': 'XMLHttpRequest'
-                                    },
-                                    body: `plaza=${encodeURIComponent(plazaId)}`
-                                })
-                                .then(response => {
-                                    if (response.ok) {
-                                        alert('Visita eliminada');
-                                        location.reload(); // Recarga la página para ver cambios
-                                    } else {
-                                        alert('Error al eliminar la visita');
-                                    }
-                                });
+                            if (Verify) {
+                                Verify = false
+                                if (confirm('¿Estás seguro de que quieres eliminar esta visita?')) {
+                                    fetch('/ShowParking/deleteVisit', {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/x-www-form-urlencoded',
+                                            'X-Requested-With': 'XMLHttpRequest'
+                                        },
+                                        body: `plaza=${encodeURIComponent(plazaId)}`
+                                    })
+                                    .then(response => {
+                                        if (response.ok) {
+                                            Verify = true
+                                            alert('Visita eliminada');
+                                            location.reload(); // Recarga la página para ver cambios
+                                        } else {
+                                            alert('Error al eliminar la visita');
+                                        }
+                                    });
+                                }
                             }
                         });
                     // Color el info del panel abajo si estamos mas arriba 
