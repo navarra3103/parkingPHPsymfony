@@ -47,19 +47,6 @@ public function getDescription(): string
                 FOREIGN KEY (IdTipo) REFERENCES Tipo(IdTipo)
             )
         SQL);
-        $this->addSql(<<<'SQL'
-            CREATE TABLE Visita (
-                Entrada DATETIME,
-                Salida DATETIME,
-                Estado INTEGER NOT NULL,
-                Coche TEXT NOT NULL,
-                Plaza INTEGER NOT NULL,
-                PRIMARY KEY (Coche, Plaza),
-                FOREIGN KEY (Estado) REFERENCES Estado(IdEstado),
-                FOREIGN KEY (Coche) REFERENCES Coche(Matricula),
-                FOREIGN KEY (Plaza) REFERENCES Plaza(IdPlaza)
-            )
-        SQL);
     }
 
     public function down(Schema $schema): void

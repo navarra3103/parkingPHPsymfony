@@ -18,9 +18,6 @@ class Visita
     #[ORM\Column(name: "Entrada", type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $entrada = null;
 
-    #[ORM\Column(name: "Salida", type: Types::DATETIME_MUTABLE, nullable: true)]
-    private ?\DateTimeInterface $salida = null;
-
     #[ORM\ManyToOne(targetEntity: Estado::class)]
     #[ORM\JoinColumn(name: "Estado", referencedColumnName: "IdEstado", nullable: false)]
     private ?Estado $estado = null;
