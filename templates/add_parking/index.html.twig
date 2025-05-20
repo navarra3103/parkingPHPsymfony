@@ -4,8 +4,8 @@
 
 {% block body %}
     <header>
-    <br>
-            <a href="{{ path('app_show_parking') }}"> <-Volver</a>
+            <br>
+            <a href={{ path('app_show_parking') }}> <-Volver</a>
     </header>
     <div>
         <div>
@@ -19,5 +19,5 @@
             {{ form_end(formulario_coche) }}
         </div>
     </div>
-    <footer></footer>
+    <footer> <a href={{ path('app_show_cars') }}> Ver lista de coches </a> </footer>
 {% endblock %}

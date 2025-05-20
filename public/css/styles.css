@@ -129,7 +129,7 @@ body, html {
             float: right;
             justify-content: center; 
             position: relative;
-            .add-car-button{
+            & > a >.add-car-button{
                 position: absolute;
                 top: 1%;
                 left: 0%;

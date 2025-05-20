@@ -61,4 +61,14 @@ final class AddParkingController extends AbstractController
             'formulario_coche'   => $formCoche->createView()
         ]);
     }
+
+    #[Route('/AddParking/Show_cars', name: 'app_show_cars')]
+    public function showCars(EntityManagerInterface $entityManager): Response
+    {
+        $coches = $entityManager->getRepository(Coche::class)->findAll();
+
+        return $this->render('add_parking/show_cars.html.twig', [
+            'coches' => $coches,
+        ]);
+    }
 }
