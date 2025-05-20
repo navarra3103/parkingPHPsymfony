@@ -95,9 +95,11 @@
                             color: #777; 
                         }
                         & > .div-result {
-                            width: 87%;
+                            width: 68%;
                             margin-left: 10%;
                             border: 1px solid #000000;
+                            z-index: 2000;
+                            background-color: white;
 
                             & > p {
                                 margin: 0;

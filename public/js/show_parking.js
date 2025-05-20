@@ -62,9 +62,21 @@ document.addEventListener('DOMContentLoaded', async () => {
                     const result = document.querySelector('.div-result');
                     result.style.display = 'none';
                     // Tener un buscador desde el input de matricula
+                        // posicionarlo
+                        const positionInput = matriculaInput.getBoundingClientRect();
+
+                        result.style.visibility = 'hidden';
+                        result.style.display = 'block';
+
+                        result.style.position = 'absolute';
+                        result.style.left = '${positionInput.left + window.scrollX}px';
+                        result.style.top = '${positionInput.top + window.scrollY}px';
+                        result.style.width = '${positionInput.width}px';
+                    
                         // Ocultar resultados si el foco se va fuera del input y del div
                         matriculaInput.addEventListener('focus', () => {
                             result.style.display = 'block';
+                            result.style.visibility = 'visible';
                         });
 
                         // Usar setTimeout para permitir cambiar el foco antes de ocultar
@@ -74,7 +86,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                                 const isInInput = active === matriculaInput;
                                 const isInResult = result.contains(active);
                                 if (!isInInput && !isInResult) {
-                                    result.style.display = 'none';
+                                    result.style.visibility = 'hidden';
                                 }
                             }, 100);
                         }
@@ -87,13 +99,33 @@ document.addEventListener('DOMContentLoaded', async () => {
                         result.addEventListener('mousedown', () => {
                             result.focus();
                         });
+                        
+                        // Añadir lo pulsado al input
+                        const dataResults = document.querySelectorAll('.div-result > p'); 
 
-                        // Filtrar resultados al escribir
+                        dataResults.forEach(dataResult => { // Iterate over each <p> element
+                            dataResult.addEventListener('click', (e) => {
+                                const selectedMatricula = e.target.innerText;
+                                matriculaInput.value = selectedMatricula;
+                                result.style.display = 'none';
+                            });
+                        });
 
+                        // busador de matricula
+                        const items = result.getElementsByTagName('p');
 
+                        matriculaInput.addEventListener('input', () => {
+                            const filter = matriculaInput.value.toLowerCase().trim();
 
-
-
+                            for (let i = 0; i < items.length; i++) {
+                                const txt = items[i].textContent.toLowerCase();
+                                if (txt.includes(filter)) {
+                                    items[i].style.display = '';
+                                } else {
+                                    items[i].style.display = 'none';
+                                }
+                            }
+                        });
 
                     // Obtener el select de tipo y establecer el valor correspondiente
                     const estadoSelect = document.getElementById('estado');
