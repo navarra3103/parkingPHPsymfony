@@ -61,7 +61,7 @@ body, html {
                         & > input[readonly] {
                             background-color: #dddddd; 
                             border: 2px solid gray;
-                            color: #a3a3a3; 
+                            color: #4d4d4d; 
                         }
                         & > .div-result {
                             width: 68%;
