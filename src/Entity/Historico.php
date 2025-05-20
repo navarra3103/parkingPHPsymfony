@@ -22,18 +22,19 @@ class Historico
     #[ORM\JoinColumn(name: "Coche", referencedColumnName: "Matricula", nullable: false)]
     private ?Coche $coche = null;
 
-    #[ORM\ManyToOne(targetEntity: Estado::class)]
-    #[ORM\JoinColumn(name: "Estado", referencedColumnName: "IdEstado", nullable: false)]
-    private ?Estado $estado = null;
-
     #[ORM\ManyToOne(targetEntity: Plaza::class)]
     #[ORM\JoinColumn(name: "Plaza", referencedColumnName: "IdPlaza", nullable: false)]
     private ?Plaza $plaza = null;
 
+    #[ORM\ManyToOne(targetEntity: Estado::class)]
+    #[ORM\JoinColumn(name: "Estado", referencedColumnName: "IdEstado", nullable: false)]
+    private ?Estado $estado = null;
+
     #[ORM\Column(name: "Salida", type: Types::DATETIME_MUTABLE, nullable: false)]
     private ?\DateTimeInterface $salida = null;
 
-    // Getters y Setters
+    #[ORM\Column(name: "Entrada", type: Types::DATETIME_MUTABLE, nullable: false)]
+    private ?\DateTimeInterface $entrada = null;
 
     public function getId(): ?int
     {
@@ -51,17 +52,6 @@ class Historico
         return $this;
     }
 
-    public function getEstado(): ?Estado
-    {
-        return $this->estado;
-    }
-
-    public function setEstado(?Estado $estado): self
-    {
-        $this->estado = $estado;
-        return $this;
-    }
-
     public function getPlaza(): ?Plaza
     {
         return $this->plaza;
@@ -73,6 +63,17 @@ class Historico
         return $this;
     }
 
+    public function getEstado(): ?Estado
+    {
+        return $this->estado;
+    }
+
+    public function setEstado(?Estado $estado): self
+    {
+        $this->estado = $estado;
+        return $this;
+    }
+
     public function getSalida(): ?\DateTimeInterface
     {
         return $this->salida;
@@ -81,6 +82,17 @@ class Historico
     public function setSalida(?\DateTimeInterface $salida): self
     {
         $this->salida = $salida;
+        return $this;
+    }
+
+    public function getEntrada(): ?\DateTimeInterface
+    {
+        return $this->entrada;
+    }
+
+    public function setEntrada(?\DateTimeInterface $entrada): self
+    {
+        $this->entrada = $entrada;
         return $this;
     }
 }
