@@ -1,39 +1,11 @@
 
-    header {
-        background-color: #333;
-        color: white;
-        padding: 10px;
-        & > ul {
-            display: flex;
-            list-style-type: none;
-            margin: 0;
-            padding: 0;
-
-            & > li {
-                margin-right: 20px;
-                width: 33%;
-                text-align: center;
-
-                & > a {
-                    color: white;
-                    text-decoration: none;
-                    width: 100%;
-                    display: block;
-
-
-                    &:hover {
-                        text-decoration: underline;
-                        background-color: #555;
-                        
-                    }
-                }
-            }
-        } 
-    }
+body, html {
+    margin: 0;
+    padding: 0;
+}
     .container {
         width: 100%;
         height: auto;
-
         & > .parking-container {
             width: 75%;
             height: 100%;
@@ -41,7 +13,6 @@
             float: left;
             overflow-x: auto; 
             white-space: nowrap; 
-            
             & > .parking-images {
                 position: relative;
                 width: 1800px;
@@ -51,7 +22,6 @@
                     width: 1800px;
                     height: 1250.580px;
                 }
-
                 & > .image-overlay{
                     position: absolute;
                     top: 0px;
@@ -70,7 +40,6 @@
                     border-radius: 8px;
                     box-shadow: 0 0 10px rgba(0,0,0,0.2);
                     z-index: 1000;
-
                     & > form {
                         width: 100%;
                         height: auto;
@@ -83,7 +52,6 @@
                             display: block;
                             margin-bottom: 0.25em;
                         }
-
                         & > input {
                             width: 87%;
                             margin-left: 10%;
@@ -103,26 +71,20 @@
                             overflow-y: auto;
                             height: auto;
                             max-height: 52%;
-
                             & > p {
                                 margin: 0;
                                 padding: 5px;
-
                                 &:hover {
                                     background-color: #797979;
                                 }
                             }
-
                         }
-
                         & > select {
                             width: 87%;
                             margin-left: 10%;
                             padding: 2px;
                             border-radius:  5px ;
                         }
-
-
                         & > button[type="submit"] {
                             margin-top: 0.5em;
                             width: 45%;
@@ -135,12 +97,10 @@
                             margin-right: 5%;
                             padding: 5px;
                             margin-bottom: 0%;
-
                             &:hover {
                                 background-color: #555;
                             }
                         }
-
                         & > button[type="button"] {
                             margin-top: 0.5em;
                             width: 45%;
@@ -156,8 +116,7 @@
                             &:hover {
                                 background-color: #555;
                             }
-                        }
-                        
+                        } 
                     }    
                 }
             }
@@ -168,23 +127,35 @@
             height: 100%;
             background-color: #aaa;
             float: right;
-            display: flex;
-            flex-direction: column;
             justify-content: center; 
-
+            position: relative;
+            .add-car-button{
+                position: absolute;
+                top: 1%;
+                left: 0%;
+                margin-bottom: 5px;
+            }
             & > button {
                 width: 80%;
                 height: 50px;
-                margin: 10px auto;
+                margin: 10px 10%;
                 background-color: #333;
                 color: white;
                 border: none;
                 border-radius: 5px;
                 cursor: pointer;
+                
 
                 &:hover {
                     background-color: #555;
                 }
+            }
+            .div-data-leyenda {
+                width: 100%;
+                overflow-y: auto;
+                max-height: 65%;
+                height: auto;
+                margin-top: 80px;
             }
         }
         & > #form-crear , & > #form-modificar {

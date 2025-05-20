@@ -9,13 +9,6 @@
 {% endblock %}
 
 {% block body %}
-    <header>
-        <ul>
-            <li><a href="">Mostar</a></li> <!-- ¡Falta cerrar </a> y tiene href vacío! -->
-            <li><a href="{{ path('app_modify_parking')}}">Editar</a></li> <!-- Este enlace SÍ recargará -->
-            <li><a href="{{ path('app_add_parking') }}">Agregar</a></li> <!-- Mismo problema -->
-        </ul>
-    </header>
     <div class="container">
         <div class="parking-container">
             <div class="parking-images">
@@ -161,13 +154,18 @@
                 </div>
             </div>
         </div>
-        <div class="legend">
-            {% for tipos in types %}
-                <div style="display: flex; align-items: center; margin: 10px;">
-                    <div style="width: 50px; height: 50px; background-color: {{ tipos.Color }}; margin-right: 10px;"></div>
-                    <div>{{ tipos.nombre }}</div>
-                </div>
-            {% endfor %}
+        <div class="legend" >
+            <!-- botones de añadir coche -->
+            <button id="add-car" class="add-car-button">🚘 Gestionar coche</button>
+            <!-- Leyenda -->
+            <div class="div-data-leyenda">
+                {% for tipos in types %}
+                    <div style="display: flex; align-items: center; margin: 10px;">
+                        <div style="width: 50px; height: 50px; background-color: {{ tipos.Color }}; margin-right: 10px;"></div>
+                        <div>{{ tipos.nombre }}</div>
+                    </div>
+                {% endfor %}
+            </div>
             <button onclick="mostrarFormulario('crear')">➕ Añadir Tipo</button>
             <button onclick="mostrarFormulario('modificar')">✏️ Modificar Tipo</button>
         </div>
