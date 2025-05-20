@@ -101,7 +101,8 @@
                             z-index: 2000;
                             background-color: white;
                             overflow-y: auto;
-                            height: 52%;
+                            height: auto;
+                            max-height: 52%;
 
                             & > p {
                                 margin: 0;
