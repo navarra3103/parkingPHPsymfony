@@ -59,8 +59,9 @@ body, html {
                             border-radius:  5px ;
                         }
                         & > input[readonly] {
-                            background-color: #f0f0f0; 
-                            color: #777; 
+                            background-color: #dddddd; 
+                            border: 2px solid gray;
+                            color: #a3a3a3; 
                         }
                         & > .div-result {
                             width: 68%;

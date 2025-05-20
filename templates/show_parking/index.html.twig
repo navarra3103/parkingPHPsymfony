@@ -1,5 +1,9 @@
 
-
+{% if app.request.get('error') %}
+    <script>
+        alert("{{ app.request.get('error')|e('js') }}");
+    </script>
+{% endif %}
 {% block stylesheets %}
     <link href="{{ asset('css/styles.css') }}" rel="stylesheet" />
 {% endblock %}
