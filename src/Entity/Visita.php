@@ -11,6 +11,8 @@ use App\Entity\Plaza;
 
 #[ORM\Entity(repositoryClass: VisitaRepository::class)]
 #[ORM\Table(name: "Visita")]
+#[ORM\UniqueConstraint(name: "UNIQ_COCHE", columns: ["Coche"])]
+#[ORM\UniqueConstraint(name: "UNIQ_PLAZA", columns: ["Plaza"])]
 class Visita
 {
     #[ORM\Column(name: "Entrada", type: Types::DATETIME_MUTABLE, nullable: true)]
