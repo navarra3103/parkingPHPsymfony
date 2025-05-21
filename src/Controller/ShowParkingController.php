@@ -245,13 +245,12 @@ public function deleteVisit(Request $request, EntityManagerInterface $em): Respo
     $visita = $em->getRepository(Visita::class)->findOneBy(['plaza' => $plazaId]);
 
     if ($visita) {
-        // Crear registro en Historico
+        // Crear registro en Historico (sin estado)
         $historico = new Historico();
         $historico->setCoche($visita->getCoche());
         $historico->setPlaza($visita->getPlaza());
         $historico->setEntrada($visita->getEntrada());
         $historico->setSalida(new \DateTime()); // salida = ahora
-        $historico->setEstado(null); // dejar en null
 
         $em->persist($historico);
         $em->remove($visita);

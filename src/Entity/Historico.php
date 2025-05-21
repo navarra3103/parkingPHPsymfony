@@ -59,17 +59,6 @@ class Historico
         return $this;
     }
 
-    public function getEstado(): ?Estado
-    {
-        return $this->estado;
-    }
-
-    public function setEstado(?Estado $estado): self
-    {
-        $this->estado = $estado;
-        return $this;
-    }
-
     public function getSalida(): ?\DateTimeInterface
     {
         return $this->salida;
