@@ -6,9 +6,7 @@ use App\Entity\Coche;
 use App\Entity\Plaza;
 use App\Entity\Tipo;
 use App\Entity\Estado;
-
 use App\Form\AddCocheTypeForm;
-
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -20,28 +18,20 @@ final class AddParkingController extends AbstractController
     #[Route('/AddParking', name: 'app_add_parking')]
     public function modifyVista(Request $request, EntityManagerInterface $entityManager): Response
     {
-        // --------------------------
-        // FORMULARIO: COCHE (nuevo)
-        // --------------------------
         $coche = new Coche();
         $formCoche = $this->createForm(AddCocheTypeForm::class, $coche);
         $formCoche->handleRequest($request);
 
         if ($formCoche->isSubmitted() && $formCoche->isValid()) {
-
             $coches = $entityManager->getRepository(Coche::class)->findAll();
 
             foreach ($coches as $c) {
-
-                $matricula = $c->getMatricula();
-
-                if ($c->getMatricula() == $coche->getMatricula()) {
-                    
-                    if ($c->getEstado() != $coche->getEstado()) {
+                if ($c->getMatricula() === $coche->getMatricula()) {
+                    if ($c->getEstado() !== $coche->getEstado()) {
                         $c->setEstado($coche->getEstado());
                     }
 
-                    if ($c->getTipo() != $coche->getTipo()) {
+                    if ($c->getTipo() !== $coche->getTipo()) {
                         $c->setTipo($coche->getTipo());
                     }
 
@@ -58,7 +48,7 @@ final class AddParkingController extends AbstractController
         }
 
         return $this->render('add_parking/index.html.twig', [
-            'formulario_coche'   => $formCoche->createView()
+            'formulario_coche' => $formCoche->createView()
         ]);
     }
 
@@ -69,6 +59,31 @@ final class AddParkingController extends AbstractController
 
         return $this->render('add_parking/show_cars.html.twig', [
             'coches' => $coches,
+        ]);
+    }
+
+    #[Route('/AddParking/EditCar/{matricula}', name: 'app_edit_car')]
+    public function editCar(Request $request, EntityManagerInterface $entityManager, string $matricula): Response
+    {
+        $coche = $entityManager->getRepository(Coche::class)->find($matricula);
+
+        if (!$coche) {
+            throw $this->createNotFoundException('Coche no encontrado');
+        }
+
+        $form = $this->createForm(AddCocheTypeForm::class, $coche);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Coche actualizado correctamente.');
+            return $this->redirectToRoute('app_show_cars');
+        }
+
+        return $this->render('add_parking/edit_car.html.twig', [
+            'formulario_editar_coche' => $form->createView(),
+            'matricula' => $matricula,
         ]);
     }
 }
