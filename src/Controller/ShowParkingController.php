@@ -234,5 +234,21 @@ final class ShowParkingController extends AbstractController
 
             return $this->redirectToRoute('app_show_parking');
         }
+//Eliminar visita 
+    #[Route('/ShowParking/deleteVisit', name: 'delete_visit', methods: ['POST'])]
+        public function deleteVisit(Request $request, EntityManagerInterface $em): Response
+        {
+            $plazaId = $request->request->get('plaza');
+            $visita = $em->getRepository(Visita::class)->findOneBy(['plaza' => $plazaId]);
+
+            if ($visita) {
+                $em->remove($visita);
+                $em->flush();
+
+                return new Response('Visita eliminada', 200);
+            }
+
+            return new Response('No se encontró visita', 404);
+        }
 
 }
