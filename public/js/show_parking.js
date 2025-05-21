@@ -63,6 +63,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                 // Click en la plaza
                 rect.addEventListener('click', (e) => {
+                    // ocultar el formulario de tipo si estan activos 
+                    document.getElementById('form-crear')?.style?.setProperty('display', 'none');
+                    document.getElementById('form-modificar')?.style?.setProperty('display', 'none');
+                    document.getElementById('form-eliminar')?.style?.setProperty('display', 'none');
                     // Si esta activo
                     if (rectActivo) {
                         const prevId = rectActivo.getAttribute('data-id');
