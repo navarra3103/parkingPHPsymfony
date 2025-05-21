@@ -106,118 +106,133 @@ final class ShowParkingController extends AbstractController
 
 
 
-       // Crear Tipo
+    // Crear Tipo
         #[Route('/ShowParking/add-tipo', name: 'add_tipo', methods: ['POST'])]
-        public function addTipo(Request $request, EntityManagerInterface $em): JsonResponse
-        {
-            $data = json_decode($request->getContent(), true);
-            $nombre = $data['nombre'] ?? null;
-            $color = $data['color'] ?? null;
-        
-            if (!$nombre) {
-                return $this->json(['error' => 'Faltan campos'], 400);
+            public function addTipo(Request $request, EntityManagerInterface $em): Response
+            {
+                $nombre = $request->request->get('nombre');
+                $color = $request->request->get('color');
+
+                // Validar
+                if (empty($nombre)) {
+                    $this->addFlash('error', 'Debes completar todos los campos.');
+                    return $this->redirectToRoute('app_show_parking');
+                }
+
+                $tipo = new Tipo();
+                $tipo->setNombre($nombre);
+                $tipo->setColor($color);
+
+                $em->persist($tipo);
+                $em->flush();
+                
+                return $this->redirectToRoute('app_show_parking');
             }
-        
-            $tipo = new Tipo();
-            $tipo->setNombre($nombre);
-            $tipo->setColor($color);
-            $em->persist($tipo);
-            $em->flush();
-        
-            return $this->json(['success' => true, 'tipo' => [
-                'id' => $tipo->getIdTipo(),
-                'nombre' => $tipo->getNombre(),
-                'color' => $tipo->getColor(),
-            ]]);
-        }
 
     // Modificar Tipo
         #[Route('/ShowParking/update-tipo', name: 'update_tipo', methods: ['POST'])]
-        public function updateTipo(Request $request, EntityManagerInterface $em): JsonResponse
-        {
-            $data = json_decode($request->getContent(), true);
-            $id = $data['id'] ?? null;
-            $nombre = $data['nombre'] ?? null;
-            $color = $data['color'] ?? null;
-        
-            $tipo = $em->getRepository(Tipo::class)->find($id);
-            if (!$tipo) {
-                return $this->json(['error' => 'Tipo no encontrado'], 404);
+            public function updateTipo(Request $request, EntityManagerInterface $em): Response
+            {
+                $id = $request->request->get('idTipo');
+                $nombre = $request->request->get('nombre');
+                $color = $request->request->get('color');
+
+                if (empty($id)) {
+                    $this->addFlash('error', 'ID del tipo no proporcionado.');
+                    return $this->redirectToRoute('app_show_parking');
+                }
+                if (empty($nombre)) {
+                    $this->addFlash('error', 'El nombre no puede estar vacío.');
+                    return $this->redirectToRoute('app_show_parking');
+                }
+
+                $tipo = $em->getRepository(Tipo::class)->find($id);
+                if (!$tipo) {
+                    $this->addFlash('error', 'Tipo no encontrado.');
+                    return $this->redirectToRoute('app_show_parking');
+                }
+
+
+                if ($nombre !== null) {
+                    $tipo->setNombre($nombre);
+                }
+
+                if ($color !== null) {
+                    $tipo->setColor($color);
+                }
+
+                $em->flush();
+
+                return $this->redirectToRoute('app_show_parking');
             }
-        
-            if ($nombre !== null) $tipo->setNombre($nombre);
-            if ($color !== null) $tipo->setColor($color);
-            $em->flush();
-        
-            return $this->json(['success' => true]);
-        }
 
     // Eliminar Tipo
         #[Route('/ShowParking/delete-tipo', name: 'delete_tipo', methods: ['POST'])]
-        public function eliminarTipo(Request $request, EntityManagerInterface $em): JsonResponse
-        {
-            $data = json_decode($request->getContent(), true);
-            $id = $data['id'] ?? null;
-        
-            $tipo = $em->getRepository(Tipo::class)->find($id);
-            if (!$tipo) {
-                return $this->json(['error' => 'Tipo no encontrado'], 404);
+            public function eliminarTipo(Request $request, EntityManagerInterface $em): JsonResponse
+            {
+                $data = json_decode($request->getContent(), true);
+                $id = $data['id'] ?? null;
+            
+                $tipo = $em->getRepository(Tipo::class)->find($id);
+                if (!$tipo) {
+                    return $this->json(['error' => 'Tipo no encontrado'], 404);
+                }
+            
+                $em->remove($tipo);
+                $em->flush();
+            
+                return $this->json(['success' => true]);
             }
-        
-            $em->remove($tipo);
-            $em->flush();
-        
-            return $this->json(['success' => true]);
-        }
 
+// Modificar visita
     #[Route('/ShowParking/modifyVisit', name: 'modify_visit', methods: ['POST'])]
-public function modifyVisit(Request $request, EntityManagerInterface $em): Response
-{
-    $plazaId = $request->request->get('plaza');
-    $matricula = $request->request->get('matricula');
-    $estadoId = $request->request->get('estado');
+        public function modifyVisit(Request $request, EntityManagerInterface $em): Response
+        {
+            $plazaId = $request->request->get('plaza');
+            $matricula = $request->request->get('matricula');
+            $estadoId = $request->request->get('estado');
 
-    $error = null;
+            $error = null;
 
-    if (empty($estadoId)) {
-        $error = 'Debes seleccionar un estado.';
-    }
+            if (empty($estadoId)) {
+                $error = 'Debes seleccionar un estado.';
+            }
 
-    $plaza = $em->getRepository(Plaza::class)->find($plazaId);
-    $estado = $em->getRepository(Estado::class)->find($estadoId);
-    $coche = $em->getRepository(Coche::class)->find($matricula);
+            $plaza = $em->getRepository(Plaza::class)->find($plazaId);
+            $estado = $em->getRepository(Estado::class)->find($estadoId);
+            $coche = $em->getRepository(Coche::class)->find($matricula);
 
-    if (!$error && (!$plaza || !$estado || !$coche)) {
-        $error = 'Plaza, Estado o Coche no válido.';
-    }
+            if (!$error && (!$plaza || !$estado || !$coche)) {
+                $error = 'Plaza, Estado o Coche no válido.';
+            }
 
-    if (!$error) {
-        $visitaExistente = $em->getRepository(Visita::class)->findOneBy(['coche' => $coche]);
-        if ($visitaExistente && $visitaExistente->getPlaza()->getIdPlaza() !== $plaza->getIdPlaza()) {
-            $error = 'Esta matrícula ya está asignada a otra plaza.';
+            if (!$error) {
+                $visitaExistente = $em->getRepository(Visita::class)->findOneBy(['coche' => $coche]);
+                if ($visitaExistente && $visitaExistente->getPlaza()->getIdPlaza() !== $plaza->getIdPlaza()) {
+                    $error = 'Esta matrícula ya está asignada a otra plaza.';
+                }
+            }
+
+            if ($error) {
+                // Guardar mensaje flash de error
+                $this->addFlash('error', $error);
+                return $this->redirectToRoute('app_show_parking');
+            }
+
+            $visita = $em->getRepository(Visita::class)->findOneBy(['plaza' => $plaza]);
+            if (!$visita) {
+                $visita = new Visita();
+                $visita->setPlaza($plaza);
+                $visita->setEntrada(new \DateTime());
+            }
+
+            $visita->setEstado($estado);
+            $visita->setCoche($coche);
+
+            $em->persist($visita);
+            $em->flush();
+
+            return $this->redirectToRoute('app_show_parking');
         }
-    }
-
-    if ($error) {
-        // Guardar mensaje flash de error
-        $this->addFlash('error', $error);
-        return $this->redirectToRoute('app_show_parking');
-    }
-
-    $visita = $em->getRepository(Visita::class)->findOneBy(['plaza' => $plaza]);
-    if (!$visita) {
-        $visita = new Visita();
-        $visita->setPlaza($plaza);
-        $visita->setEntrada(new \DateTime());
-    }
-
-    $visita->setEstado($estado);
-    $visita->setCoche($coche);
-
-    $em->persist($visita);
-    $em->flush();
-
-    return $this->redirectToRoute('app_show_parking');
-}
 
 }

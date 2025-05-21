@@ -1,6 +1,5 @@
 // ==================== GLOBALES ====================
 window.mostrarFormulario = mostrarFormulario;
-window.enviarFormulario = enviarFormulario;
 
 // ==================== FUNCIONES ====================
     //Oscurecer 
@@ -24,39 +23,6 @@ window.enviarFormulario = enviarFormulario;
         document.getElementById('form-modificar').style.display = tipo === 'modificar' ? 'block' : 'none';
         document.getElementById('form-eliminar').style.display = tipo === 'eliminar' ? 'block' : 'none';
     }
-    // Enviar formulario update/create/delete
-    export async function enviarFormulario(tipo) {
-        let payload = {};
-        
-        if (tipo === 'add-tipo') {
-            payload.nombre = document.getElementById('crear-nombre').value;
-            payload.color = document.getElementById('crear-color').value;
-        }
-    
-        if (tipo === 'update-tipo') {
-            payload.id = document.getElementById('modificar-id').value;
-            payload.nombre = document.getElementById('modificar-nombre').value;
-            payload.color = document.getElementById('modificar-color').value;
-        }
-    
-        if (tipo === 'delete-tipo') {
-            payload.id = document.getElementById('eliminar-id').value;
-        }
-    
-        const response = await fetch(`/ShowParking/${tipo}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload),
-        });
-    
-        if (response.ok) {
-            location.reload();
-        } else {
-            alert('Error al procesar la acción');
-        }
-    }
-
-
 
 // ==================== GESTION DEL DOM ====================
 document.addEventListener('DOMContentLoaded', async () => { 
