@@ -14,6 +14,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 final class ShowParkingController extends AbstractController
 {
@@ -170,83 +171,53 @@ final class ShowParkingController extends AbstractController
         }
 
     #[Route('/ShowParking/modifyVisit', name: 'modify_visit', methods: ['POST'])]
-        public function modifyVisit(Request $request, EntityManagerInterface $em): Response
-        {
-            $plazaId = $request->request->get('plaza');
-            $matricula = $request->request->get('matricula');
-            $estadoId = $request->request->get('estado');
-        
-            $error = null;
-        
-            // Validar estado
-            if (empty($estadoId)) {
-                $error = 'Debes seleccionar un estado.';
-            }
-        
-            $plaza = $em->getRepository(Plaza::class)->find($plazaId);
-            $estado = $em->getRepository(Estado::class)->find($estadoId);
-            $coche = $em->getRepository(Coche::class)->find($matricula);
-        
-            if (!$error && (!$plaza || !$estado || !$coche)) {
-                $error = 'Plaza, Estado o Coche no válido.';
-            }
-        
-            if (!$error) {
-                // Comprobar si matrícula ya está asignada a otra plaza
-                $visitaExistente = $em->getRepository(Visita::class)->findOneBy(['coche' => $coche]);
-                if ($visitaExistente && $visitaExistente->getPlaza()->getIdPlaza() !== $plaza->getIdPlaza()) {
-                    $error = 'Esta matrícula ya está asignada a otra plaza.';
-                }
-            }
-        
-            if ($error) {
-                // Recuperar datos necesarios para mostrar el formulario
-                $matriculas = $em->getRepository(Coche::class)->findAll();
-                $estados = $em->getRepository(Estado::class)->findAll();
-            
-                return $this->render('parking/show.html.twig', [
-                    'error' => $error,
-                    'matriculas' => $matriculas,
-                    'estados' => $estados,
-                    // Pasa también info del formulario si quieres reponer campos
-                    'plazaId' => $plazaId,
-                    'matricula' => $matricula,
-                    'estadoId' => $estadoId
-                ]);
-            }
-        
-            // Buscar o crear la visita
-            $visita = $em->getRepository(Visita::class)->findOneBy(['plaza' => $plaza]);
-            if (!$visita) {
-                $visita = new Visita();
-                $visita->setPlaza($plaza);
-                $visita->setEntrada(new \DateTime());
-            }
-        
-            $visita->setEstado($estado);
-            $visita->setCoche($coche);
-        
-            $em->persist($visita);
-            $em->flush();
-        
-            return $this->redirectToRoute('app_show_parking'); // Redirige al listado de plazas
-        }
+public function modifyVisit(Request $request, EntityManagerInterface $em): Response
+{
+    $plazaId = $request->request->get('plaza');
+    $matricula = $request->request->get('matricula');
+    $estadoId = $request->request->get('estado');
 
+    $error = null;
 
-    #[Route('/ShowParking/deleteVisit', name: 'delete_visit', methods: ['POST'])]
-    public function deleteVisit(Request $request, EntityManagerInterface $em): Response
-    {
-        $plazaId = $request->request->get('plaza');
-        $visita = $em->getRepository(Visita::class)->findOneBy(['plaza' => $plazaId]);
-
-        if ($visita) {
-            $em->remove($visita);
-            $em->flush();
-
-            return new Response('Visita eliminada', 200);
-        }
-
-        return new Response('No se encontró visita', 404);
+    if (empty($estadoId)) {
+        $error = 'Debes seleccionar un estado.';
     }
+
+    $plaza = $em->getRepository(Plaza::class)->find($plazaId);
+    $estado = $em->getRepository(Estado::class)->find($estadoId);
+    $coche = $em->getRepository(Coche::class)->find($matricula);
+
+    if (!$error && (!$plaza || !$estado || !$coche)) {
+        $error = 'Plaza, Estado o Coche no válido.';
+    }
+
+    if (!$error) {
+        $visitaExistente = $em->getRepository(Visita::class)->findOneBy(['coche' => $coche]);
+        if ($visitaExistente && $visitaExistente->getPlaza()->getIdPlaza() !== $plaza->getIdPlaza()) {
+            $error = 'Esta matrícula ya está asignada a otra plaza.';
+        }
+    }
+
+    if ($error) {
+        // Guardar mensaje flash de error
+        $this->addFlash('error', $error);
+        return $this->redirectToRoute('app_show_parking');
+    }
+
+    $visita = $em->getRepository(Visita::class)->findOneBy(['plaza' => $plaza]);
+    if (!$visita) {
+        $visita = new Visita();
+        $visita->setPlaza($plaza);
+        $visita->setEntrada(new \DateTime());
+    }
+
+    $visita->setEstado($estado);
+    $visita->setCoche($coche);
+
+    $em->persist($visita);
+    $em->flush();
+
+    return $this->redirectToRoute('app_show_parking');
+}
 
 }
