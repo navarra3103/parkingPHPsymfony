@@ -1,23 +1,116 @@
-{% block stylesheets %}
-    <link href="{{ asset('css/styles.css') }}" rel="stylesheet" />
-{% endblock %}
 
 {% block body %}
-    <header>
-            <br>
-            <a href={{ path('app_show_parking') }}> <-Volver</a>
-    </header>
-    <div>
-        <div>
-            <h2>Coche</h2>
-            {{ form_start(formulario_coche) }}
-                {{ form_row(formulario_coche.matricula) }}
-                {{ form_row(formulario_coche.marca) }}
-                {{ form_row(formulario_coche.modelo) }}
-                {{ form_row(formulario_coche.color) }}
-                <button class="btn btn-primary">Registrar Coche</button>
-            {{ form_end(formulario_coche) }}
-        </div>
+    <style>
+        body {
+            background: linear-gradient(to right, #eef2f3, #8e9eab);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .form-container {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
+            padding: 2.5rem;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .form-container h2,
+        .form-container h3 {
+            font-weight: 600;
+        }
+
+        .form-label {
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-control {
+            font-size: 1.05rem;
+            padding: 1rem;
+            height: auto;
+            border-radius: 0.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+
+        .btn-primary {
+            font-size: 1.1rem;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+        }
+
+        .btn-outline-info {
+            margin-top: 1.5rem;
+            font-size: 1rem;
+            padding: 0.6rem 1.5rem;
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+        }
+
+        .text-error {
+            color: #dc3545;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+    </style>
+
+    <a href="{{ path('app_show_parking') }}" class="btn btn-outline-secondary back-btn">
+        <i class="bi bi-arrow-left"></i> Volver
+    </a>
+
+    <div class="form-container text-center">
+        <h2 class="text-primary mb-2">Gestión de Coches</h2>
+        <h3 class="text-secondary mb-4">Registrar Nuevo Coche</h3>
+
+        {{ form_start(formulario_coche, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+
+            <div class="form-group">
+                {{ form_label(formulario_coche.matricula, 'Matrícula del coche', {'label_attr': {'class': 'form-label'}}) }}
+                {{ form_widget(formulario_coche.matricula, {'attr': {'class': 'form-control', 'placeholder': 'Ej: 1234ABC'}}) }}
+                {{ form_errors(formulario_coche.matricula) }}
+            </div>
+
+            <div class="form-group">
+                {{ form_label(formulario_coche.marca, 'Marca del coche', {'label_attr': {'class': 'form-label'}}) }}
+                {{ form_widget(formulario_coche.marca, {'attr': {'class': 'form-control', 'placeholder': 'Ej: Ford'}}) }}
+                {{ form_errors(formulario_coche.marca) }}
+            </div>
+
+            <div class="form-group">
+                {{ form_label(formulario_coche.modelo, 'Modelo del coche', {'label_attr': {'class': 'form-label'}}) }}
+                {{ form_widget(formulario_coche.modelo, {'attr': {'class': 'form-control', 'placeholder': 'Ej: Fiesta'}}) }}
+                {{ form_errors(formulario_coche.modelo) }}
+            </div>
+
+            <div class="form-group">
+                {{ form_label(formulario_coche.color, 'Color del coche', {'label_attr': {'class': 'form-label'}}) }}
+                {{ form_widget(formulario_coche.color, {'attr': {'class': 'form-control', 'placeholder': 'Ej: Rojo'}}) }}
+                {{ form_errors(formulario_coche.color) }}
+            </div>
+
+            <div class="d-grid">
+                <button type="submit" class="btn btn-primary shadow">
+                    <i class="bi bi-check-circle me-2"></i>Registrar Coche
+                </button>
+            </div>
+
+        {{ form_end(formulario_coche) }}
+
+        <a href="{{ path('app_show_cars') }}" class="btn btn-outline-info shadow-sm">
+            <i class="bi bi-card-list me-2"></i>Ver lista de coches
+        </a>
     </div>
-    <footer> <a href={{ path('app_show_cars') }}> Ver lista de coches </a> </footer>
 {% endblock %}
