@@ -26,10 +26,6 @@ class Historico
     #[ORM\JoinColumn(name: "Plaza", referencedColumnName: "IdPlaza", nullable: false)]
     private ?Plaza $plaza = null;
 
-    #[ORM\ManyToOne(targetEntity: Estado::class)]
-    #[ORM\JoinColumn(name: "Estado", referencedColumnName: "IdEstado", nullable: false)]
-    private ?Estado $estado = null;
-
     #[ORM\Column(name: "Salida", type: Types::DATETIME_MUTABLE, nullable: false)]
     private ?\DateTimeInterface $salida = null;
 

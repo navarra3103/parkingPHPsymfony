@@ -7,6 +7,7 @@ use App\Entity\Estado;
 use App\Entity\Visita;
 use App\Entity\Tipo;
 use App\Entity\Coche;
+use App\Entity\Historico;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -236,19 +237,31 @@ final class ShowParkingController extends AbstractController
         }
 //Eliminar visita 
     #[Route('/ShowParking/deleteVisit', name: 'delete_visit', methods: ['POST'])]
-        public function deleteVisit(Request $request, EntityManagerInterface $em): Response
-        {
-            $plazaId = $request->request->get('plaza');
-            $visita = $em->getRepository(Visita::class)->findOneBy(['plaza' => $plazaId]);
+public function deleteVisit(Request $request, EntityManagerInterface $em): Response
+{
+    $plazaId = $request->request->get('plaza');
 
-            if ($visita) {
-                $em->remove($visita);
-                $em->flush();
+    // Buscar la visita por la plaza
+    $visita = $em->getRepository(Visita::class)->findOneBy(['plaza' => $plazaId]);
 
-                return new Response('Visita eliminada', 200);
-            }
+    if ($visita) {
+        // Crear registro en Historico
+        $historico = new Historico();
+        $historico->setCoche($visita->getCoche());
+        $historico->setPlaza($visita->getPlaza());
+        $historico->setEntrada($visita->getEntrada());
+        $historico->setSalida(new \DateTime()); // salida = ahora
+        $historico->setEstado(null); // dejar en null
 
-            return new Response('No se encontró visita', 404);
-        }
+        $em->persist($historico);
+        $em->remove($visita);
+        $em->flush();
+
+        return new Response('Visita eliminada y registrada en el historial.', 200);
+    }
+
+    return new Response('No se encontró visita', 404);
+}
+
 
 }
