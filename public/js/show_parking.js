@@ -190,18 +190,26 @@ document.addEventListener('DOMContentLoaded', async () => {
                             }
                         });
                     // Color el info del panel abajo si estamos mas arriba 
+                        // Mostralo en oculto 
+                        infoPanel.style.visibility = 'hidden';
+                        infoPanel.style.display = 'block'; 
                         // Obtener ubicacion del panel
                         const containerRect = parkingContainer.getBoundingClientRect();
                             const mouseX = e.clientX - containerRect.left;
                             const mouseY = e.clientY - containerRect.top;
                         // Cacular el umbral de 10%
                         const umbralSuperior = parkingContainer.offsetHeight * 0.1;
+                        // Calcular el umbral de 95% 
+                        const umbralInferior = parkingContainer.offsetHeight * 0.95;
                             if (mouseY >= 0 && mouseY <= umbralSuperior) {
                                 // Colocar ariba
                                 var offsetY = -10
+                            } else if (mouseY > umbralSuperior && mouseY < umbralInferior) {
+                                // Si el ratón está entre el 10% y el 95% (zona media)
+                                var offsetY = 0;
                             } else {
-                                // Colocar abajo
-                                var offsetY = 150
+                                // Colocar abajo (ratón en el 5% inferior, es decir, más del 95% hacia abajo)
+                                var offsetY = 250;
                             }
                         // Colocar el panel de info en el medio de raton
                         const offsetX = infoPanel.offsetWidth / 2;
