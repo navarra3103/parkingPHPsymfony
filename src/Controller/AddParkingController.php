@@ -6,6 +6,8 @@ use App\Entity\Coche;
 use App\Entity\Plaza;
 use App\Entity\Tipo;
 use App\Entity\Estado;
+use App\Entity\Visita;
+
 use App\Form\AddCocheTypeForm;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -56,9 +58,21 @@ final class AddParkingController extends AbstractController
     public function showCars(EntityManagerInterface $entityManager): Response
     {
         $coches = $entityManager->getRepository(Coche::class)->findAll();
+        $datosCoches = [];
+
+        foreach ($coches as $coche) {
+            $visita = $entityManager->getRepository(Visita::class)->findOneBy([
+                'coche' => $coche,
+            ]);
+            $plaza = $visita ? $visita->getPlaza() : null;
+            $datosCoches[] = [
+                'coche' => $coche,
+                'plaza' => $plaza,
+            ];
+        }
 
         return $this->render('add_parking/show_cars.html.twig', [
-            'coches' => $coches,
+            'datosCoches' => $datosCoches,
         ]);
     }
 
