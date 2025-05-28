@@ -93,12 +93,15 @@ final class ShowParkingController extends AbstractController
                 'entrada' => null,
             ];
 
+            $ocupada = isset($mapaVisitas[$id]);
+
             $result[] = [
                 'id' => $id,
                 'color' => $tipoColor,
                 'matricula' => $info['matricula'],
                 'estado' => $info['estado'],
                 'entrada' => $info['entrada'],
+                'ocupada' => $ocupada,
             ];
         }
 

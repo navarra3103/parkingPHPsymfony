@@ -60,6 +60,16 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const color = plaza.color || '#00ff00';
                     rect.setAttribute('fill', color);
                     coloresOriginales[id] = color;
+                
+                // Añadir borde al rect si esta ocupado
+                if (plaza.ocupada) {
+                    rect.setAttribute('stroke', 'black');
+                    rect.setAttribute('stroke-width', '4');
+                } else {
+                    rect.removeAttribute('stroke');
+                    rect.removeAttribute('stroke-width');
+}
+
 
                 // Click en la plaza
                 rect.addEventListener('click', (e) => {
