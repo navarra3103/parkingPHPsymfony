@@ -114,8 +114,8 @@ final class ShowParkingController extends AbstractController
         #[Route('/ShowParking/add-tipo', name: 'add_tipo', methods: ['POST'])]
             public function addTipo(Request $request, EntityManagerInterface $em): Response
             {
-                $nombre = $request->request->get('nombre');
-                $color = $request->request->get('color');
+                $nombre = $request->request->get('crear-nombre');
+                $color = $request->request->get('crear-color');
 
                 // Validar
                 if (empty($nombre)) {
@@ -172,20 +172,27 @@ final class ShowParkingController extends AbstractController
 
     // Eliminar Tipo
         #[Route('/ShowParking/delete-tipo', name: 'delete_tipo', methods: ['POST'])]
-            public function eliminarTipo(Request $request, EntityManagerInterface $em): JsonResponse
+            public function eliminarTipo(Request $request, EntityManagerInterface $em): Response
             {
-                $data = json_decode($request->getContent(), true);
-                $id = $data['id'] ?? null;
+                $id = $request->request->get('eliminar-id');
             
-                $tipo = $em->getRepository(Tipo::class)->find($id);
-                if (!$tipo) {
-                    return $this->json(['error' => 'Tipo no encontrado'], 404);
+                if (null === $id || !is_numeric($id)) {
+                    $this->addFlash('error', 'ID del tipo no válido o no proporcionado.');
+                    return $this->redirectToRoute('app_show_parking'); // Redirige a la página principal
                 }
-            
+
+                $tipo = $em->getRepository(Tipo::class)->findOneBy(['idTipo' => $id]);
+
+                if (!$tipo) {
+                    $this->addFlash('error', 'Tipo no encontrado.');
+                    return $this->redirectToRoute('app_show_parking'); // Redirige a la página principal
+                }
+
                 $em->remove($tipo);
                 $em->flush();
-            
-                return $this->json(['success' => true]);
+                
+                $this->addFlash('success', 'Tipo eliminado correctamente.');
+                return $this->redirectToRoute('app_show_parking');
             }
 
 // Modificar visita
