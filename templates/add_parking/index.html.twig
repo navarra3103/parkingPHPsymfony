@@ -18,6 +18,11 @@
             border-color: #333;
         }
 
+        .btn-primary:hover {
+            background-color: #444;
+            border-color: #333;
+        }
+
         .text-primary {
             color: var(--bs-heading-color) !important;
         }
@@ -45,7 +50,7 @@
 
             <div class="form-group">
                 {{ form_label(formulario_coche.matricula, 'Matrícula del coche', {'label_attr': {'class': 'form-label'}}) }}
-                {{ form_widget(formulario_coche.matricula, {'attr': {'class': 'form-control', 'placeholder': 'Ej: 1234ABC'}}) }}
+                {{ form_widget(formulario_coche.matricula, {'attr': {'class': 'form-control', 'placeholder': 'Ej: 1234 ABC'}}) }}
                 {{ form_errors(formulario_coche.matricula) }}
             </div>
 
