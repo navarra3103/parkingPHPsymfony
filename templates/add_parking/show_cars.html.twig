@@ -13,6 +13,25 @@
     <div class="container mt-5">
         <h1 class="text-center mb-4">🚗 Lista de Coches Registrados</h1>
 
+        {# NUEVO: Formulario de Búsqueda #}
+        <div class="mb-4">
+            <form action="{{ path('app_show_cars') }}" method="GET" class="d-flex">
+                <input
+                    type="text"
+                    name="matricula" {# ¡Importante! El nombre del parámetro que espera el controlador #}
+                    class="form-control me-2"
+                    placeholder="Buscar por matrícula..."
+                    value="{{ currentSearch | default('') }}" {# Muestra el término de búsqueda actual #}
+                >
+                <button type="submit" class="btn btn-primary">Buscar</button>
+                {# Opcional: Botón para limpiar la búsqueda #}
+                {% if currentSearch %}
+                    <a href="{{ path('app_show_cars') }}" class="btn btn-secondary ms-2">Limpiar</a>
+                {% endif %}
+            </form>
+        </div>
+        {# FIN NUEVO: Formulario de Búsqueda #}
+
         {% if datosCoches is not empty %}
             <table class="table table-striped table-bordered">
                 <thead class="table-dark">
@@ -43,7 +62,12 @@
             </table>
         {% else %}
             <div class="alert alert-info text-center">
-                No hay coches registrados.
+                {# Mensaje diferente si no hay coches O la búsqueda no arrojó resultados #}
+                {% if currentSearch %}
+                    No se encontraron coches con la matrícula "{{ currentSearch }}".
+                {% else %}
+                    No hay coches registrados.
+                {% endif %}
             </div>
         {% endif %}
 

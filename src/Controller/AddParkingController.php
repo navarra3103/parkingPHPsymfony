@@ -11,7 +11,7 @@ use App\Entity\Visita;
 use App\Form\AddCocheTypeForm;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Request; // ¡IMPORTADO! Para poder leer la solicitud
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -55,9 +55,22 @@ final class AddParkingController extends AbstractController
     }
 
     #[Route('/AddParking/Show_cars', name: 'app_show_cars')]
-    public function showCars(EntityManagerInterface $entityManager): Response
+    // ¡MODIFICADO! Ahora acepta el objeto Request
+    public function showCars(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $coches = $entityManager->getRepository(Coche::class)->findAll();
+        // Obtener la matrícula de búsqueda del parámetro de la URL
+        $searchMatricula = $request->query->get('matricula'); // Usamos query->get() para parámetros GET
+
+        if ($searchMatricula) {
+            // Si hay una matrícula de búsqueda, buscar solo ese coche
+            // findOneBy devuelve null si no lo encuentra, o un solo objeto Coche
+            $cocheEncontrado = $entityManager->getRepository(Coche::class)->findOneBy(['matricula' => $searchMatricula]);
+            $coches = $cocheEncontrado ? [$cocheEncontrado] : []; // Si se encuentra, lo ponemos en un array, si no, un array vacío
+        } else {
+            // Si no hay matrícula de búsqueda, obtener todos los coches
+            $coches = $entityManager->getRepository(Coche::class)->findAll();
+        }
+
         $datosCoches = [];
 
         foreach ($coches as $coche) {
@@ -73,6 +86,7 @@ final class AddParkingController extends AbstractController
 
         return $this->render('add_parking/show_cars.html.twig', [
             'datosCoches' => $datosCoches,
+            'currentSearch' => $searchMatricula, // Pasamos el término de búsqueda actual a la plantilla
         ]);
     }
 
