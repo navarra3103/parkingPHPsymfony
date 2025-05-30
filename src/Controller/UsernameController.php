@@ -32,27 +32,27 @@ final class UsernameController extends AbstractController
     }
 
     #[Route('/username/delete/{id}', name: 'delete_user', methods: ['POST'])]
-public function delete(int $id, UserRepository $userRepository, EntityManagerInterface $em): JsonResponse
-{
-    $user = $userRepository->find($id);
-    if (!$user) {
-        return new JsonResponse(['status' => 'not_found'], 404);
+    public function delete(int $id, UserRepository $userRepository, EntityManagerInterface $em): JsonResponse
+    {
+        $user = $userRepository->find($id);
+        if (!$user) {
+            return new JsonResponse(['status' => 'not_found'], 404);
+        }
+
+        // Si tiene el rol de admin y es el único admin => no permitir borrar
+        $adminUsers = array_filter($userRepository->findAll(), function ($u) {
+            return in_array('ROLE_ADMIN', $u->getRoles());
+        });
+
+        if (in_array('ROLE_ADMIN', $user->getRoles()) && count($adminUsers) === 1) {
+            return new JsonResponse(['status' => 'cannot_delete_last_admin'], 403);
+        }
+
+        $em->remove($user);
+        $em->flush();
+
+        return new JsonResponse(['status' => 'deleted']);
     }
-
-    // Si tiene el rol de admin y es el único admin => no permitir borrar
-    $adminUsers = array_filter($userRepository->findAll(), function ($u) {
-        return in_array('ROLE_ADMIN', $u->getRoles());
-    });
-
-    if (in_array('ROLE_ADMIN', $user->getRoles()) && count($adminUsers) === 1) {
-        return new JsonResponse(['status' => 'cannot_delete_last_admin'], 403);
-    }
-
-    $em->remove($user);
-    $em->flush();
-
-    return new JsonResponse(['status' => 'deleted']);
-}
 
     #[Route('/username/change-password/{id}', name: 'username_change_password', methods: ['POST'])]
     public function changePassword(
@@ -98,30 +98,29 @@ public function delete(int $id, UserRepository $userRepository, EntityManagerInt
         return new JsonResponse(['status' => 'role_updated']);
     }
     #[Route('/username/remove-admin/{id}', name: 'remove_admin', methods: ['POST'])]
-#[Route('/username/remove-admin/{id}', name: 'remove_admin', methods: ['POST'])]
-public function removeAdmin(int $id, UserRepository $userRepository, EntityManagerInterface $em): JsonResponse
-{
-    $user = $userRepository->find($id);
-    if (!$user) {
-        return new JsonResponse(['status' => 'not_found'], 404);
+    public function removeAdmin(int $id, UserRepository $userRepository, EntityManagerInterface $em): JsonResponse
+    {
+        $user = $userRepository->find($id);
+        if (!$user) {
+            return new JsonResponse(['status' => 'not_found'], 404);
+        }
+    
+        // Buscar cuántos admins existen
+        $allUsers = $userRepository->findAll();
+        $adminUsers = array_filter($allUsers, function ($u) {
+            return in_array('ROLE_ADMIN', $u->getRoles());
+        });
+    
+        // Si es el único admin, no dejar quitar el rol
+        if (count($adminUsers) === 1 && $adminUsers[0]->getId() === $user->getId()) {
+            return new JsonResponse(['status' => 'last_admin_forbidden'], 403);
+        }
+    
+        // Quitar el rol
+        $roles = array_filter($user->getRoles(), fn($role) => $role !== 'ROLE_ADMIN');
+        $user->setRoles(array_values($roles)); // reindexar
+        $em->flush();
+    
+        return new JsonResponse(['status' => 'admin_removed']);
     }
-
-    // Buscar cuántos admins existen
-    $allUsers = $userRepository->findAll();
-    $adminUsers = array_filter($allUsers, function ($u) {
-        return in_array('ROLE_ADMIN', $u->getRoles());
-    });
-
-    // Si es el único admin, no dejar quitar el rol
-    if (count($adminUsers) === 1 && $adminUsers[0]->getId() === $user->getId()) {
-        return new JsonResponse(['status' => 'last_admin_forbidden'], 403);
-    }
-
-    // Quitar el rol
-    $roles = array_filter($user->getRoles(), fn($role) => $role !== 'ROLE_ADMIN');
-    $user->setRoles(array_values($roles)); // reindexar
-    $em->flush();
-
-    return new JsonResponse(['status' => 'admin_removed']);
-}
 }
