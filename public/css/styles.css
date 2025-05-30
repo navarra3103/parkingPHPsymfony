@@ -65,7 +65,6 @@ body, html {
                         }
                         & > .div-result {
                             width: 68%;
-                            margin-left: 10%;
                             border: 1px solid #000000;
                             z-index: 2000;
                             background-color: white;
