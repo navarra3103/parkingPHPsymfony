@@ -15,7 +15,6 @@ use Symfony\Component\Routing\Attribute\Route;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 
 final class ShowParkingController extends AbstractController
 {
@@ -98,6 +97,7 @@ final class ShowParkingController extends AbstractController
             $result[] = [
                 'id' => $id,
                 'color' => $tipoColor,
+                'tipo' => $plaza->getTipo()?->getIdTipo(),
                 'matricula' => $info['matricula'],
                 'estado' => $info['estado'],
                 'entrada' => $info['entrada'],
@@ -202,75 +202,90 @@ final class ShowParkingController extends AbstractController
             $plazaId = $request->request->get('plaza');
             $matricula = $request->request->get('matricula');
             $estadoId = $request->request->get('estado');
-
+            $tipoId = $request->request->get('tipo');
+                
             $error = null;
-
-            if (empty($estadoId)) {
-                $error = 'Debes seleccionar un estado.';
-            }
-
-            $plaza = $em->getRepository(Plaza::class)->find($plazaId);
-            $estado = $em->getRepository(Estado::class)->find($estadoId);
-            $coche = $em->getRepository(Coche::class)->find($matricula);
-
-            if (!$error && (!$plaza || !$estado || !$coche)) {
-                $error = 'Plaza, Estado o Coche no válido.';
-            }
-
-            if (!$error) {
-                $visitaExistente = $em->getRepository(Visita::class)->findOneBy(['coche' => $coche]);
-                if ($visitaExistente && $visitaExistente->getPlaza()->getIdPlaza() !== $plaza->getIdPlaza()) {
-                    $error = 'Esta matrícula ya está asignada a otra plaza.';
+                
+            if (empty($tipoId)) {
+                $error = 'Debes seleccionar un tipo.';
+            } else {
+                $tipo = $em->getRepository(Tipo::class)->find($tipoId);
+                $plaza = $em->getRepository(Plaza::class)->find($plazaId);
+            
+                if (!$tipo || !$plaza) {
+                    $error = 'Tipo o Plaza no válido.';
+                } else {
+                    // Modificar solo el tipo si no hay matrícula
+                    $plaza->setTipo($tipo);
+                    $em->persist($plaza);
+                
+                    // Si hay matrícula, entonces validar todo lo demás
+                    if (!empty($matricula)) {
+                        if (empty($estadoId)) {
+                            $error = 'Debes seleccionar un estado.';
+                        } else {
+                            $estado = $em->getRepository(Estado::class)->find($estadoId);
+                            $coche = $em->getRepository(Coche::class)->find($matricula);
+                        
+                            if (!$estado || !$coche) {
+                                $error = 'Estado o Coche no válido.';
+                            } else {
+                                $visitaExistente = $em->getRepository(Visita::class)->findOneBy(['coche' => $coche]);
+                                if ($visitaExistente && $visitaExistente->getPlaza()->getIdPlaza() !== $plaza->getIdPlaza()) {
+                                    $error = 'Esta matrícula ya está asignada a otra plaza.';
+                                } else {
+                                    $visita = $em->getRepository(Visita::class)->findOneBy(['plaza' => $plaza]);
+                                    if (!$visita) {
+                                        $visita = new Visita();
+                                        $visita->setPlaza($plaza);
+                                        $visita->setEntrada(new \DateTime());
+                                    }
+                                
+                                    $visita->setEstado($estado);
+                                    $visita->setCoche($coche);
+                                    $em->persist($visita);
+                                }
+                            }
+                        }
+                    }
                 }
             }
-
+        
             if ($error) {
-                // Guardar mensaje flash de error
                 $this->addFlash('error', $error);
-                return $this->redirectToRoute('app_show_parking');
+            } else {
+                $em->flush();
             }
-
-            $visita = $em->getRepository(Visita::class)->findOneBy(['plaza' => $plaza]);
-            if (!$visita) {
-                $visita = new Visita();
-                $visita->setPlaza($plaza);
-                $visita->setEntrada(new \DateTime());
-            }
-
-            $visita->setEstado($estado);
-            $visita->setCoche($coche);
-
-            $em->persist($visita);
-            $em->flush();
-
+        
             return $this->redirectToRoute('app_show_parking');
         }
+
 //Eliminar visita 
     #[Route('/ShowParking/deleteVisit', name: 'delete_visit', methods: ['POST'])]
-public function deleteVisit(Request $request, EntityManagerInterface $em): Response
-{
-    $plazaId = $request->request->get('plaza');
-
-    // Buscar la visita por la plaza
-    $visita = $em->getRepository(Visita::class)->findOneBy(['plaza' => $plazaId]);
-
-    if ($visita) {
-        // Crear registro en Historico (sin estado)
-        $historico = new Historico();
-        $historico->setCoche($visita->getCoche());
-        $historico->setPlaza($visita->getPlaza());
-        $historico->setEntrada($visita->getEntrada());
-        $historico->setSalida(new \DateTime()); // salida = ahora
-
-        $em->persist($historico);
-        $em->remove($visita);
-        $em->flush();
-
-        return new Response('Visita eliminada y registrada en el historial.', 200);
-    }
-
-    return new Response('No se encontró visita', 404);
-}
+        public function deleteVisit(Request $request, EntityManagerInterface $em): Response
+        {
+            $plazaId = $request->request->get('plaza');
+        
+            // Buscar la visita por la plaza
+            $visita = $em->getRepository(Visita::class)->findOneBy(['plaza' => $plazaId]);
+        
+            if ($visita) {
+                // Crear registro en Historico (sin estado)
+                $historico = new Historico();
+                $historico->setCoche($visita->getCoche());
+                $historico->setPlaza($visita->getPlaza());
+                $historico->setEntrada($visita->getEntrada());
+                $historico->setSalida(new \DateTime()); // salida = ahora
+            
+                $em->persist($historico);
+                $em->remove($visita);
+                $em->flush();
+            
+                return new Response('Visita eliminada y registrada en el historial.', 200);
+            }
+        
+            return new Response('No se encontró visita', 404);
+        }
 
 
 }

@@ -135,6 +135,13 @@
                     <form action="/ShowParking/modifyVisit" id="visita-form" method="post">
                         <label for="plaza-id">Plaza :</label>
                         <input type="text" id="plaza-id" name="plaza" readonly><br>
+                        <label for="tipo-id">Tipo:</label>
+                        <select id="tipo-id" name="tipo">
+                            <option value="">Selecciona un tipo</option>
+                            {% for tipo in types %}
+                                <option value="{{ tipo.idTipo }}">{{ tipo.nombre }}</option>
+                            {% endfor %}
+                        </select><br>
                         <label for="matricula-id">Matrícula:</label>
                         <input type="text" id="matricula" name="matricula"><br>
                             <div id="result" tabindex="0" class="div-result">

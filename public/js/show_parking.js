@@ -68,7 +68,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 } else {
                     rect.removeAttribute('stroke');
                     rect.removeAttribute('stroke-width');
-}
+                }
 
 
                 // Click en la plaza
@@ -89,6 +89,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                     // Obtener la id del parking
                     const idInput = document.getElementById('plaza-id')
                         idInput.value = plaza.id;
+                    // Obtener el tipo de la plaza
+                    const tipoSelect = document.getElementById('tipo-id');
+                        const tipoNombre = plaza.tipo || '';
+                        tipoSelect.value = tipoNombre; 
                     // Obtener la matricula del parking
                     const matriculaInput = document.getElementById('matricula');
                         matriculaInput.value = plaza.matricula || '';
@@ -151,7 +155,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                                             }
                                         }
                                     });
-                    // Obtener las opciones del select de tipo de plaza
+                    // Obtener las opciones del select de estado de plaza
                         // Opciones del select
                         const estadoSelect = document.getElementById('estado');
                             const estadoNombre = plaza.estado || '';
