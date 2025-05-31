@@ -9,6 +9,14 @@
         margin-top: 20px;
         margin-bottom: 20px;
     }
+    .controllerLogin {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        display: flex;
+        justify-content: center;
+        margin-bottom: 20px;
+    }
         table {
             width: 100%;
             border-collapse: collapse;
@@ -143,7 +151,19 @@
 {% block body %}
 <a href="{{ path('app_show_parking') }}" class="btn btn-secondary position-fixed top-0 start-0 m-3">← Volver a parking</a>
 <h1>Lista de Usuarios</h1>
-
+<div class="controllerLogin">
+    {% if setting and setting.login %}
+        <form method="post" action="{{ path('app_toggle_login') }}">
+            <input type="hidden" name="estado" value="0">
+            <button class="btn btn-danger">Desactivar el login</button>
+        </form>
+    {% else %}
+        <form method="post" action="{{ path('app_toggle_login') }}">
+            <input type="hidden" name="estado" value="1">
+            <button class="btn btn-success">Activar el login</button>
+        </form>
+    {% endif %}
+</div>
 <table>
     <thead>
         <tr>

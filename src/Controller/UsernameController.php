@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Repository\UserRepository;
+use App\Repository\SettingRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -10,11 +11,11 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Security\Http\Attribute\IsGranted;
+
 final class UsernameController extends AbstractController
 {
     #[Route('/username', name: 'app_username')]
-    public function index(UserRepository $userRepository): Response
+   public function index(UserRepository $userRepository, SettingRepository $settingRepository): Response
     {   
         $user = $this->getUser();
 
@@ -26,8 +27,11 @@ final class UsernameController extends AbstractController
 
         $users = $userRepository->findAll();
 
+        $setting = $settingRepository->find(1);
+
         return $this->render('username/index.html.twig', [
             'users' => $users,
+            'setting' => $setting,
         ]);
     }
 
@@ -80,6 +84,7 @@ final class UsernameController extends AbstractController
 
         return new JsonResponse(['status' => 'password_updated']);
     }
+    
     #[Route('/username/make-admin/{id}', name: 'username_make_admin', methods: ['POST'])]
     public function makeAdmin(int $id, UserRepository $userRepository, EntityManagerInterface $em): JsonResponse
     {
@@ -97,6 +102,7 @@ final class UsernameController extends AbstractController
 
         return new JsonResponse(['status' => 'role_updated']);
     }
+    
     #[Route('/username/remove-admin/{id}', name: 'remove_admin', methods: ['POST'])]
     public function removeAdmin(int $id, UserRepository $userRepository, EntityManagerInterface $em): JsonResponse
     {
@@ -122,5 +128,28 @@ final class UsernameController extends AbstractController
         $em->flush();
     
         return new JsonResponse(['status' => 'admin_removed']);
+    }
+    
+    #[Route('/admin/toggle-login', name: 'app_toggle_login', methods: ['POST'])]
+    public function toggleLogin(Request $request, SettingRepository $settingRepo, EntityManagerInterface $em): Response
+    {
+        // Seguridad: Solo admins
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+
+        // Obtener el valor nuevo desde el formulario
+        $nuevoEstado = $request->request->get('estado') == '1';
+
+        // Suponemos que solo hay un Setting
+        $setting = $settingRepo->findOneBy([]); 
+
+        if (!$setting) {
+            $setting = new Setting();
+            $em->persist($setting);
+        }
+
+        $setting->setLogin($nuevoEstado);
+        $em->flush();
+
+        return $this->redirectToRoute('app_username');
     }
 }

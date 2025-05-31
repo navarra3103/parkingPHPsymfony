@@ -2,8 +2,9 @@
 
 namespace App\Controller;
 
-use App\Entity\User; // Importa tu entidad User
-use App\Form\RegistrationFormType; // Aún no existe, la crearemos en el Paso 3
+use App\Entity\User; 
+use App\Form\RegistrationFormType;
+use App\Repository\SettingRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,8 +15,14 @@ use Symfony\Component\Routing\Attribute\Route;
 class RegistrationController extends AbstractController
 {
     #[Route('/register', name: 'app_register')]
-    public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager): Response
+    public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager, SettingRepository $settingRepository): Response
     {
+        $setting = $settingRepository->findOneBy([]);
+        if (!$setting || !$setting->isLogin()) {
+            $this->addFlash('error', '⚠️ El registro está desactivado por el administrador.');
+            return $this->redirectToRoute('app_login');
+        }
+
         // 1. Crear una nueva instancia de la entidad User
         $user = new User();
 

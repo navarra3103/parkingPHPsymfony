@@ -107,12 +107,26 @@
         .login-container .links a:hover {
             text-decoration: underline;
         }
+        .messages {
+            position: fixed;
+            top: 120px;
+            left: 40%;
+            z-index: 1000;
+        }
     </style>
 {% endblock %}
 
 {% block body %}
+<div class="messages">
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label == 'error' ? 'danger' : label }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endfor %}
+</div>
 <div class="login-container">
-    <h1></h1>
 
     {# Muestra cualquier error de autenticación #}
     {% if error %}
