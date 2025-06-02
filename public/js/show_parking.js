@@ -1,6 +1,12 @@
 // ==================== GLOBALES ====================
 window.mostrarFormulario = mostrarFormulario;
 
+// Variables globales para el sistema de actualización
+let intervalId = null;
+let infoPorPlaza = {};
+let coloresOriginales = {};
+let rectangulos = null;
+
 // ==================== FUNCIONES ====================
 //Oscurecer 
 function darkenColor(hex, percent = 20) {
@@ -41,6 +47,79 @@ async function cargarDatosPlazas() {
     }
 }
 
+// Nueva función para actualizar datos y repintar plazas
+async function actualizarDatosYRepintar() {
+    console.log('Actualizando datos de plazas...');
+    
+    const data = await cargarDatosPlazas();
+    if (!data) {
+        return; // Error ya manejado en cargarDatosPlazas
+    }
+
+    // Actualizar el objeto de información por plaza
+    infoPorPlaza = {};
+    data.forEach(plaza => {
+        infoPorPlaza[plaza.id] = plaza;
+    });
+
+    // Repintar todas las plazas
+    if (rectangulos) {
+        rectangulos.forEach(rect => {
+            const id = rect.getAttribute('data-id');
+            const plaza = infoPorPlaza[id];
+            
+            if (!plaza) {
+                console.warn(`No se encontraron datos para la plaza ${id}`);
+                return;
+            }
+
+            // Actualizar color original
+            const color = plaza.color || '#00ff00';
+            coloresOriginales[id] = color;
+
+            // Solo repintar si no es el rectángulo activo
+            const rectActivo = document.querySelector('rect[data-id].activo') || 
+                             Array.from(rectangulos).find(r => r.style.opacity === '0.7');
+            
+            if (rect !== rectActivo) {
+                rect.setAttribute('fill', color);
+            }
+
+            // Actualizar borde según ocupación
+            if (plaza.ocupada) {
+                rect.setAttribute('stroke', 'black');
+                rect.setAttribute('stroke-width', '4');
+            } else {
+                rect.removeAttribute('stroke');
+                rect.removeAttribute('stroke-width');
+            }
+        });
+    }
+
+    console.log('Datos actualizados correctamente');
+}
+
+// Función para iniciar la actualización automática
+function iniciarActualizacionAutomatica() {
+    // Limpiar intervalo anterior si existe
+    if (intervalId) {
+        clearInterval(intervalId);
+    }
+
+    // Configurar nuevo intervalo cada 10 segundos
+    intervalId = setInterval(actualizarDatosYRepintar, 10000);
+    console.log('Sistema de actualización automática iniciado (cada 10 segundos)');
+}
+
+// Función para detener la actualización automática
+function detenerActualizacionAutomatica() {
+    if (intervalId) {
+        clearInterval(intervalId);
+        intervalId = null;
+        console.log('Sistema de actualización automática detenido');
+    }
+}
+
 function mostrarMensajeError(mensaje) {
     // Crear o actualizar un elemento de error en la UI
     let errorDiv = document.getElementById('error-message');
@@ -57,6 +136,24 @@ function mostrarMensajeError(mensaje) {
     setTimeout(() => {
         errorDiv.style.display = 'none';
     }, 5000);
+}
+
+function mostrarMensajeExito(mensaje) {
+    // Crear o actualizar un elemento de éxito en la UI
+    let successDiv = document.getElementById('success-message');
+    if (!successDiv) {
+        successDiv = document.createElement('div');
+        successDiv.id = 'success-message';
+        successDiv.style.cssText = 'position: fixed; top: 20px; right: 20px; background: #44ff44; color: white; padding: 10px; border-radius: 5px; z-index: 1000;';
+        document.body.appendChild(successDiv);
+    }
+    successDiv.textContent = mensaje;
+    successDiv.style.display = 'block';
+    
+    // Ocultar después de 3 segundos
+    setTimeout(() => {
+        successDiv.style.display = 'none';
+    }, 3000);
 }
 
 // ==================== FUNCIONES DE UI ====================
@@ -79,7 +176,6 @@ function configurarPanelMatricula(matriculaInput) {
     result.style.display = 'none';
     result.style.visibility = 'hidden';
     result.style.display = 'block';
-
 
     // Función para ocultar panel cuando pierde foco
     function hideIfFocusOutside() {
@@ -172,14 +268,15 @@ function configurarBotonEliminar() {
             });
 
             if (response.ok) {
-                alert('Visita eliminada');
-                location.reload();
+                mostrarMensajeExito('Visita eliminada correctamente');
+                // Actualizar datos inmediatamente después de eliminar
+                await actualizarDatosYRepintar();
             } else {
                 throw new Error('Error en la respuesta del servidor');
             }
         } catch (error) {
             console.error('Error eliminando visita:', error);
-            alert('Error al eliminar la visita');
+            mostrarMensajeError('Error al eliminar la visita');
         }
     });
 }
@@ -260,7 +357,7 @@ function actualizarFormularioPlaza(plaza) {
 document.addEventListener('DOMContentLoaded', async () => {
     // Variables de objetos del DOM
     const svg = document.querySelector('svg.image-overlay');
-    const rectangulos = svg?.querySelectorAll('rect[data-id]');
+    rectangulos = svg?.querySelectorAll('rect[data-id]');
     const infoPanel = document.getElementById('info-panel');
     const parkingContainer = document.getElementById('parking-container') || svg?.parentElement;
 
@@ -273,16 +370,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Variables de estado
     let rectActivo = null;
-    let coloresOriginales = {};
 
-    // Cargar datos desde el backend
+    // Cargar datos iniciales desde el backend
     const data = await cargarDatosPlazas();
     if (!data) {
         return; // Error ya manejado en cargarDatosPlazas
     }
 
-    // Procesar datos de plazas
-    const infoPorPlaza = {};
+    // Procesar datos de plazas iniciales
     data.forEach(plaza => {
         infoPorPlaza[plaza.id] = plaza;
     });
@@ -320,15 +415,18 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (rectActivo) {
                 const prevId = rectActivo.getAttribute('data-id');
                 rectActivo.setAttribute('fill', coloresOriginales[prevId]);
+                rectActivo.classList.remove('activo');
             }
 
             // Oscurecer color del rectángulo actual
             const colorOscuro = darkenColor(color);
             rect.setAttribute('fill', colorOscuro);
+            rect.classList.add('activo');
             rectActivo = rect;
 
-            // Actualizar formulario con datos de la plaza
-            actualizarFormularioPlaza(plaza);
+            // Actualizar formulario con datos actuales de la plaza
+            const plazaActual = infoPorPlaza[id] || plaza;
+            actualizarFormularioPlaza(plazaActual);
 
             // Configurar botón eliminar
             configurarBotonEliminar();
@@ -347,6 +445,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (rectActivo) {
                 const id = rectActivo.getAttribute('data-id');
                 rectActivo.setAttribute('fill', coloresOriginales[id]);
+                rectActivo.classList.remove('activo');
                 rectActivo = null;
             }
         }
@@ -359,4 +458,19 @@ document.addEventListener('DOMContentLoaded', async () => {
             ocultarFormularios();
         }
     });
+
+    // Iniciar el sistema de actualización automática
+    iniciarActualizacionAutomatica();
+
+    // Limpiar intervalo cuando se cierre la página
+    window.addEventListener('beforeunload', () => {
+        detenerActualizacionAutomatica();
+    });
+
+    console.log('Sistema de parking inicializado con actualización automática');
 });
+
+// Exponer funciones de control para debugging/testing
+window.iniciarActualizacionAutomatica = iniciarActualizacionAutomatica;
+window.detenerActualizacionAutomatica = detenerActualizacionAutomatica;
+window.actualizarDatosYRepintar = actualizarDatosYRepintar;
