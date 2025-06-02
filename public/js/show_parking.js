@@ -144,7 +144,22 @@ function mostrarMensajeExito(mensaje) {
     if (!successDiv) {
         successDiv = document.createElement('div');
         successDiv.id = 'success-message';
-        successDiv.style.cssText = 'position: fixed; top: 20px; right: 20px; background: #44ff44; color: white; padding: 10px; border-radius: 5px; z-index: 1000;';
+        successDiv.style.cssText = `
+            position: fixed; 
+            top: 0%; 
+            left: 50%; 
+            transform: translate(-50%, 0%); 
+            background: #44ff44; 
+            color: white; 
+            padding: 20px 30px; 
+            border-radius: 10px; 
+            z-index: 1000; 
+            font-size: 16px; 
+            font-weight: bold; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            text-align: center;
+            min-width: 200px;
+        `;
         document.body.appendChild(successDiv);
     }
     successDiv.textContent = mensaje;
@@ -269,6 +284,26 @@ function configurarBotonEliminar() {
 
             if (response.ok) {
                 mostrarMensajeExito('Visita eliminada correctamente');
+                
+                // Ocultar formularios después de eliminar
+                ocultarFormularios();
+                
+                // Ocultar el panel de información
+                const infoPanel = document.getElementById('info-panel');
+                if (infoPanel) {
+                    infoPanel.style.display = 'none';
+                }
+                
+                // Restaurar color del rectángulo activo si existe
+                const rectActivo = document.querySelector('rect.activo');
+                if (rectActivo) {
+                    const id = rectActivo.getAttribute('data-id');
+                    if (coloresOriginales[id]) {
+                        rectActivo.setAttribute('fill', coloresOriginales[id]);
+                    }
+                    rectActivo.classList.remove('activo');
+                }
+                
                 // Actualizar datos inmediatamente después de eliminar
                 await actualizarDatosYRepintar();
             } else {
@@ -382,6 +417,36 @@ document.addEventListener('DOMContentLoaded', async () => {
         infoPorPlaza[plaza.id] = plaza;
     });
 
+    // Configurar evento submit para el formulario visita-form
+    const visitaForm = document.getElementById('visita-form');
+    if (visitaForm) {
+        visitaForm.addEventListener('submit', (e) => {
+            // Permitir que el formulario se envíe normalmente
+            // pero ocultar formularios después del submit
+            setTimeout(() => {
+                ocultarFormularios();
+                
+                // Ocultar el panel de información
+                if (infoPanel) {
+                    infoPanel.style.display = 'none';
+                }
+                
+                // Restaurar color del rectángulo activo si existe
+                if (rectActivo) {
+                    const id = rectActivo.getAttribute('data-id');
+                    if (coloresOriginales[id]) {
+                        rectActivo.setAttribute('fill', coloresOriginales[id]);
+                    }
+                    rectActivo.classList.remove('activo');
+                    rectActivo = null;
+                }
+                
+                // Actualizar datos después del submit
+                actualizarDatosYRepintar();
+            }, 100);
+        });
+    }
+
     // Configurar cada rectángulo/plaza
     rectangulos.forEach(rect => {
         const id = rect.getAttribute('data-id');
@@ -470,7 +535,3 @@ document.addEventListener('DOMContentLoaded', async () => {
     console.log('Sistema de parking inicializado con actualización automática');
 });
 
-// Exponer funciones de control para debugging/testing
-window.iniciarActualizacionAutomatica = iniciarActualizacionAutomatica;
-window.detenerActualizacionAutomatica = detenerActualizacionAutomatica;
-window.actualizarDatosYRepintar = actualizarDatosYRepintar;
