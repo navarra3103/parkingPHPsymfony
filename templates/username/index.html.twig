@@ -27,6 +27,7 @@
             padding: 10px;
             text-align: center;
             border: 1px solid gray;
+            width: 20%;
         }
         th {
             background-color:rgb(185, 185, 185);
@@ -183,6 +184,7 @@
                 <td>{{ 'ROLE_ADMIN' in user.roles ? 'Administrador' : 'Usuario' }}</td>
                 <td>
                     <input type="password" placeholder="Nueva contraseña" id="new-pass-{{ user.id }}">
+                    <button class="ChagePassword" onclick="changePassword({{ user.id }})">Cambiar Contraseña</button>
                 </td>
                 <td>
                     {% if 'ROLE_ADMIN' not in user.roles %}
@@ -192,7 +194,6 @@
                     {% endif %}
                 </td>
                 <td>
-                    <button class="ChagePassword" onclick="changePassword({{ user.id }})">Cambiar Contraseña</button>
                     <button class="Delete" onclick="deleteUser({{ user.id }})">Eliminar</button>
                 </td>
             </tr>
